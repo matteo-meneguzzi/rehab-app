@@ -1355,7 +1355,10 @@ function viewSetup(){
     "Modificare qui NON tocca le giornate già registrate — quelle si correggono dallo Storico."));
   for(const f of S.fronti){
     ex.append(el("div",{class:"frontehdr",style:"margin-top:18px"},
-      el("span",{class:"bar",style:`background:${f.color}`}), el("h3",{style:"font-family:var(--serif);font-size:15px"},f.name)));
+      el("span",{class:"bar",style:`background:${f.color}`}),
+      el("h3",{style:"font-family:var(--serif);font-size:15px;flex:1"},f.name),
+      el("button",{class:"iconbtn",title:"Aggiungi un esercizio a "+f.name,
+        onclick:()=>openExerciseSheet(null,{fronte:f.id})},"+ Esercizio")));
     for(const l of f.levels){
       const grp=el("div",{class:"lvgroup","data-fronte":f.id,"data-level":l.id});
       grp.append(el("div",{class:"lvghdr"}, l.name,
@@ -1602,10 +1605,14 @@ function showTokenHelp(){
   });
 }
 
-function openExerciseSheet(id){
+// pre: {fronte, minLevel} per aggiungere già dentro una sezione, senza dover
+// scegliere fronte e livello da zero. Il livello di default è quello dove sei ora.
+function openExerciseSheet(id,pre){
   const editing=id?S.exercises.find(e=>e.id===id):null;
+  const fid=(pre&&pre.fronte)||S.fronti[0].id;
   const draft=editing?Object.assign({},editing):{id:"e_"+Math.random().toString(36).slice(2,8),
-    fronte:S.fronti[0].id,name:"",cad:"daily",dose:"",minLevel:"L0",load:null};
+    fronte:fid,name:"",cad:"daily",dose:"",
+    minLevel:(pre&&pre.minLevel)||S.levels[fid]||fronte(fid).levels[0].id,load:null};
   openSheet(editing?"Modifica esercizio":"Nuovo esercizio", s=>{
     const f_name=el("input",{value:draft.name,placeholder:"Nome esercizio",oninput:e=>draft.name=e.target.value});
     const f_dose=el("input",{value:draft.dose,placeholder:"es. 3×12",oninput:e=>draft.dose=e.target.value});

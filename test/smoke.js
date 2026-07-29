@@ -36,6 +36,7 @@ run("openDaySheet giorno con orfani",()=>M.openDaySheet("2026-07-24"));
 run("openLevelSheet",()=>M.openLevelSheet("pettorale"));
 run("openExerciseSheet (nuovo)",()=>M.openExerciseSheet(null));
 run("openExerciseSheet (modifica)",()=>M.openExerciseSheet("e_wrist"));
+for(const f of M.S.fronti)run("openExerciseSheet (+ da "+f.id+")",()=>M.openExerciseSheet(null,{fronte:f.id}));
 for(const f of M.S.fronti)run("openLevelsEditor "+f.id,()=>M.openLevelsEditor(f.id));
 
 console.log(fail?`\n${fail} FALLITI\n`:"\nNESSUN ERRORE A RUNTIME\n");
