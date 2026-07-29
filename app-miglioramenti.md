@@ -16,13 +16,23 @@
   avambraccio/pettorale = `ok`|`lieve` (regola del semaforo ≤3/10).
 - **Dove:** `isCleanDay` / `streak` / `cleanWeeks` in `index.html`.
 
-### 2. Un giorno non compilato azzera la striscia
+### 2. ✅ RISOLTO (2026-07-29) — Un giorno non compilato azzerava la striscia
 - **Cosa:** `streak(fid)` si interrompe appena incontra un giorno `missing` (non registrato).
 - **Perché è un problema:** dimenticare di **loggare** ≠ aver **saltato** l'allenamento.
   Un giorno scordato resetta settimane di progresso verso il gate → punitivo, scoraggia.
-- **Fix proposto:** distinguere "non loggato" (non conta ma **non spezza** la striscia)
-  da "loggato peggiorato" (spezza). Eventualmente tollerare 1 buco.
-- **Dove:** `streak` / `fronteDayStatus`.
+- **Fatto:** `streakInfo()` distingue i tre casi. Un giorno non loggato non conta come pulito
+  ma **non spezza**; oltre **2 buchi consecutivi** (`MAX_GAP`) la striscia si ferma davvero,
+  perché a quel punto non stai più monitorando. Una giornata registrata *peggiorata* spezza
+  come prima. In "Progressi" i buchi vengono dichiarati sotto la striscia.
+
+### ✅ Livelli editabili e catalogo allineato al piano (2026-07-29)
+- **Livelli:** Setup → "Livelli e gate" → "Scala <fronte>": rinomina, riordina, aggiungi o
+  togli un livello (`openLevelsEditor`). Non si può togliere il livello attuale; togliendone
+  uno usato da giornate registrate, quelle conservano il loro.
+- **Catalogo:** allineato alle schede di `livelli-progressione.md`, da 12 a 24 esercizi, con
+  i livelli L2→L5 non più vuoti. Ripristinati `e_knee`, `e_add`, `e_fly`, `e_isopett`
+  (erano gli "orfani" trovati migrando). `seedRev` evita che un esercizio cancellato apposta
+  ritorni a ogni avvio.
 
 ### 3. Grafici e gate non sono d'accordo
 - **Cosa:** i due grafici (`drawPain`, `drawExPain`) disegnano anche i giorni **in bozza**

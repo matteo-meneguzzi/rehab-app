@@ -343,6 +343,7 @@ const STATUS_VAL={ok:0,lieve:3,peggio:6,rosso:9}; // mappatura numerica per i gr
 function seed(){
   return {
     version:2,
+    seedRev:2,
     createdAt:todayISO(),
     lastBackup:null,
     theme:null,
@@ -394,22 +395,37 @@ function seed(){
       pubalgia:{L0:["Nessun fastidio, anche i giorni dopo, per tutto il periodo"]},
     },
     checksDone:{}, // "fronte:levelId:i" -> bool
+    // Catalogo allineato alle schede di livelli-progressione.md (2026-07-25).
+    // È solo il template da cui si compone una giornata nuova: modificarlo non
+    // tocca le giornate già registrate.
     exercises:[
-      // avambraccio
-      {id:"e_grip",fronte:"avambraccio",name:"Grip isometrico",cad:"daily",dose:"4×30–45s @50–60%",minLevel:"L0",load:{label:"%",unit:"%"}},
-      {id:"e_wrist",fronte:"avambraccio",name:"Wrist curl eccentrico",cad:"alt",dose:"3×12 · 1s su / 4s giù",minLevel:"L1",load:{label:"Peso",unit:"kg"}},
-      {id:"e_hammer",fronte:"avambraccio",name:"Rotazioni martello",cad:"alt",dose:"3×10",minLevel:"L1",load:null},
-      // pettorale
-      {id:"e_mob",fronte:"pettorale",name:"Mobilità spalla (5 mov.)",cad:"daily",dose:"8–10 rip cad.",minLevel:"L0",load:null},
-      {id:"e_add_band",fronte:"pettorale",name:"Adduzione orizzontale con elastico",cad:"alt",dose:"3×10–12 lente per lato",minLevel:"L2",load:null},
+      // ---- avambraccio ----
+      {id:"e_grip",fronte:"avambraccio",name:"Grip isometrico",cad:"daily",dose:"4×30–45s @50–60% · mattina, prima del PC",minLevel:"L0",load:{label:"%",unit:"%"}},
+      {id:"e_mills",fronte:"avambraccio",name:"Mill's (stretch gentile)",cad:"daily",dose:"2×30s · dopo gli esercizi e a fine giornata",minLevel:"L0",load:null},
+      {id:"e_wrist",fronte:"avambraccio",name:"Wrist curl eccentrico",cad:"alt",dose:"3×12 · 2–4 kg · 1s su / 4s giù",minLevel:"L1",load:{label:"Peso",unit:"kg"}},
+      {id:"e_hammer",fronte:"avambraccio",name:"Rotazioni martello",cad:"alt",dose:"3×10 · presa a metà manico",minLevel:"L1",load:null},
+      {id:"e_chinup",fronte:"avambraccio",name:"Trazioni assistite presa supina",cad:"alt",dose:"metà del volume di partenza · la supina scarica il brachioradiale",minLevel:"L3",load:null},
+      {id:"e_row",fronte:"avambraccio",name:"Rematore leggero / farmer carry leggeri",cad:"alt",dose:"presa neutra → prona per ultima",minLevel:"L4",load:{label:"Peso",unit:"kg"}},
+      // ---- pettorale ----
+      {id:"e_mob",fronte:"pettorale",name:"Mobilità spalla (5 mov.)",cad:"daily",dose:"8–10 rip cad. · range indolore",minLevel:"L0",load:null},
+      {id:"e_isopett",fronte:"pettorale",name:"Isometrico adduzione",cad:"daily",dose:"4×20–30s a intensità crescente, indolore",minLevel:"L1",load:null},
+      {id:"e_pushwall",fronte:"pettorale",name:"Push-up al muro / inclinato",cad:"alt",dose:"polso neutro (pugni/maniglie), a buffer",minLevel:"L2",load:null},
       {id:"e_pushup",fronte:"pettorale",name:"Push-up (polso neutro, a buffer)",cad:"alt",dose:"volume dimezzato · ginocchia→normale · su pugni/maniglie",minLevel:"L3",load:null},
-      // pubalgia
-      {id:"e_resp",fronte:"pubalgia",name:"Respiro + trasverso",cad:"daily",dose:"8–10",minLevel:"L0",load:null},
-      {id:"e_sque",fronte:"pubalgia",name:"Squeeze gambe distese",cad:"daily",dose:"50%, 3x30s",minLevel:"L0",load:null},
+      {id:"e_add_band",fronte:"pettorale",name:"Adduzione orizzontale con elastico",cad:"alt",dose:"3×10–12 per lato · mirato all'inserzione, non carica il polso",minLevel:"L3",load:null},
+      {id:"e_croci",fronte:"pettorale",name:"Croci leggere (elastico/manubri)",cad:"alt",dose:"3×12 · chiusura controllata a fine corsa",minLevel:"L3",load:null},
+      // ---- pubalgia ----
+      {id:"e_sque",fronte:"pubalgia",name:"Squeeze isometrico gambe distese",cad:"daily",dose:"3×30s @50% · esercizio-chiave · verdetto = giorno dopo",minLevel:"L0",load:null},
       {id:"e_bridge",fronte:"pubalgia",name:"Bridge glutei (piedi uniti, ginocchia aperte)",cad:"daily",dose:"3×30s",minLevel:"L0",load:null},
       {id:"e_birddog",fronte:"pubalgia",name:"Bird dog solo-gambe (braccia a terra)",cad:"daily",dose:"alterna gamba, controllato",minLevel:"L0",load:null},
-      {id:"e_crunch",fronte:"pubalgia",name:"Plank-crunch gambe sollevate",cad:"daily",dose:"gambe verso l'alto",minLevel:"L0",load:null},
       {id:"e_deadbug",fronte:"pubalgia",name:"Dead bug (anti-estensione)",cad:"daily",dose:"tempi brevi, mai a cedimento",minLevel:"L0",load:null},
+      {id:"e_crunch",fronte:"pubalgia",name:"Plank-crunch gambe sollevate",cad:"daily",dose:"⚠️ carica basso addome/pube: dose minima, primo da togliere se riaccende",minLevel:"L0",load:null},
+      {id:"e_resp",fronte:"pubalgia",name:"Respiro + trasverso",cad:"daily",dose:"8–10",minLevel:"L0",load:null},
+      {id:"e_knee",fronte:"pubalgia",name:"Ginocchio al petto alternato",cad:"daily",dose:"8–10 per gamba · mobilità dolce",minLevel:"L0",load:null},
+      {id:"e_add",fronte:"pubalgia",name:"Side-lying hip adduction",cad:"daily",dose:"2×10–12 per lato",minLevel:"L0",load:null},
+      {id:"e_fly",fronte:"pubalgia",name:"Butterfly al muro",cad:"daily",dose:"3×20–30s",minLevel:"L0",load:null},
+      {id:"e_plank",fronte:"pubalgia",name:"Plank dalle ginocchia",cad:"alt",dose:"tempi brevi, mai a cedimento",minLevel:"L2",load:null},
+      {id:"e_copen",fronte:"pubalgia",name:"Copenhagen plank facilitato",cad:"alt",dose:"gamba su panca a metà coscia · 5–10s · pochissime rip",minLevel:"L3",load:null},
+      {id:"e_squat",fronte:"pubalgia",name:"Squat (buca controllata, senza pausa)",cad:"alt",dose:"cura il bracing prima di scendere",minLevel:"L4",load:{label:"Peso",unit:"kg"}},
     ],
     // iso -> {type:'train'|'rest', committed, levels:{fronte:levelId}, morning:{fronte:state},
     //         morningNote:{fronte:testo}, items:[…]}
@@ -429,11 +445,13 @@ function migrate(p,addNew){const base=seed();
   // shallow ensure keys exist
   for(const k of["gateWeeks","gateChecks","checksDone","levels","levelSince","levelLog","fronti","exercises","days"]) if(p[k]==null)p[k]=base[k];
   for(const d in p.days){if(p.days[d].committed==null)p.days[d].committed=true; if(p.days[d].morningNote==null)p.days[d].morningNote={};} // già inseriti = registrati
-  // Solo all'avvio normale (non su import) ri-aggiungiamo gli esercizi introdotti dopo il primo seed:
+  // Solo all'avvio normale (non su import) allineiamo il catalogo alle revisioni del seed:
   // su import il JSON è la verità e va rispettato così com'è.
-  if(addNew!==false){
-    const NEW_IDS=["e_add_band","e_pushup","e_croci","e_bridge","e_birddog","e_crunch","e_deadbug"];
-    for(const id of NEW_IDS)if(!p.exercises.some(e=>e.id===id)){const se=base.exercises.find(e=>e.id===id);if(se)p.exercises.push(se);}
+  // seedRev evita che un esercizio cancellato apposta ritorni a ogni avvio.
+  if(addNew!==false && (p.seedRev||0)<2){
+    for(const se of base.exercises)
+      if(!p.exercises.some(e=>e.id===se.id))p.exercises.push(se);
+    p.seedRev=2;
   }
   migrateToItems(p);
   p.version=2;
@@ -601,17 +619,32 @@ function fronteDayStatus(d,fid){
 }
 function isCleanDay(s){return s==="clean"||s==="lieve";}
 
-// consecutive clean days ending at most recent logged day (missing gap breaks)
-function streak(fid){
-  let n=0,i=0;const t=todayISO();
+// Giorni puliti consecutivi. Dimenticare di LOGGARE non è come aver PEGGIORATO:
+// un giorno non compilato non conta come pulito, ma non spezza la striscia.
+// Oltre MAX_GAP buchi di fila però la striscia si ferma davvero: a quel punto
+// non stai più monitorando, e un numero che non poggia su dati non vuol dire nulla.
+const MAX_GAP=2;
+function streakInfo(fid){
+  let n=0,i=0,gap=0,gaps=0;const t=todayISO();
   while(i<400){
-    const d=addDays(t,-i);const s=fronteDayStatus(d,fid);
-    if(i===0&&s==="missing"){i++;continue;} // today not logged yet
-    if(isCleanDay(s)){n++;i++;continue;}
+    const d=addDays(t,-i);
+    if(d<S.createdAt)break;
+    const s=fronteDayStatus(d,fid);
+    if(s==="missing"){
+      if(i>0){                       // oggi non ancora compilato non è un buco
+        gap++;
+        if(gap>MAX_GAP)break;
+      }
+      i++;continue;
+    }
+    // i buchi si contano solo se la striscia prosegue oltre: quelli finali
+    // sono semplicemente dove iniziano i dati, non dimenticanze
+    if(isCleanDay(s)){gaps+=gap;gap=0;n++;i++;continue;}
     break;
   }
-  return n;
+  return {days:n,gaps};
 }
+function streak(fid){return streakInfo(fid).days;}
 function cleanWeeks(fid){return Math.floor(streak(fid)/7);}
 function gateChecksFor(fid){const lid=S.levels[fid];const arr=(S.gateChecks[fid]&&S.gateChecks[fid][lid])||[];return arr;}
 function checkKey(fid,i){return `${fid}:${S.levels[fid]}:${i}`;}
@@ -921,7 +954,8 @@ function viewProgressi(){
   const frag=document.createDocumentFragment();
   for(const f of S.fronti){
     const card=el("div",{class:"card"});
-    const cw=cleanWeeks(f.id),st=streak(f.id),need=S.gateWeeks[f.id],ready=gateReady(f.id);
+    const si=streakInfo(f.id);
+    const cw=cleanWeeks(f.id),st=si.days,need=S.gateWeeks[f.id],ready=gateReady(f.id);
     card.append(el("div",{class:"frontehdr"}, el("span",{class:"bar",style:`background:${f.color}`}),
       el("h2",{},f.name), el("span",{class:"pill"+(ready?" ok":" wait"),style:"margin-left:auto"},
         atMaxLevel(f.id)?"Livello max": ready?"Pronto a salire":"In corso")));
@@ -938,6 +972,8 @@ function viewProgressi(){
     card.append(el("div",{class:"progline"},
       atMaxLevel(f.id)?`Striscia pulita: ${st} giorni.`:
       `Striscia pulita: ${st} giorni · ${cw}/${need} settimane verso il gate.`));
+    if(si.gaps)card.append(el("div",{class:"sub"},
+      `${si.gaps} giorn${si.gaps===1?"o non compilato":"i non compilati"} nel mezzo: non spezzano la striscia, ma non contano come puliti.`));
 
     // gate readiness + checklist
     if(!atMaxLevel(f.id)){
@@ -1288,6 +1324,12 @@ function viewSetup(){
       el("input",{class:"numin tnum",type:"number",min:"1",max:"8",value:S.gateWeeks[f.id],
         onchange:e=>{S.gateWeeks[f.id]=Math.max(1,Number(e.target.value)||1);save();}})));
   }
+  gt.append(el("div",{class:"rowsep"}));
+  gt.append(el("div",{class:"sub",style:"margin-bottom:8px"},
+    "La scala di ogni fronte: rinomina, aggiungi o togli un livello."));
+  for(const f of S.fronti)
+    gt.append(el("button",{class:"btn ghost small",style:"margin-top:8px",
+      onclick:()=>openLevelsEditor(f.id)},"Scala "+f.name+" ("+f.levels.length+" livelli)"));
   frag.append(gt);
 
   // exercises editor
@@ -1325,6 +1367,65 @@ function viewSetup(){
 
   frag.append(el("div",{class:"foot"},"Recupero · diario personale · v1"));
   return frag;
+}
+
+function openLevelsEditor(fid){
+  const f=fronte(fid);
+  openSheet("Scala — "+f.name, s=>{
+    const body=el("div",{});
+    s.append(el("p",{class:"sub",style:"margin:0 0 4px"},
+      "L'ordine è la progressione: il primo in alto è il livello più basso. "+
+      "Le giornate già registrate conservano il livello che avevano, qualunque cosa cambi qui."),body);
+
+    function usedInDays(lid){
+      let n=0;
+      for(const d in S.days){const r=day(d);if(r&&r.levels&&r.levels[fid]===lid)n++;}
+      return n;}
+    function removeLevel(i){
+      const l=f.levels[i];
+      if(f.levels.length<=1){toast("Serve almeno un livello");return;}
+      if(S.levels[fid]===l.id){toast("È il livello attuale: spostati prima su un altro");return;}
+      const n=usedInDays(l.id);
+      f.levels.splice(i,1);
+      if(S.gateChecks[fid])delete S.gateChecks[fid][l.id];
+      save();refresh();
+      toast(n?`Livello tolto (resta su ${n} giornat${n===1?"a":"e"} già registrat${n===1?"a":"e"})`:"Livello tolto");
+    }
+    function addLevel(){
+      let n=f.levels.length;
+      while(f.levels.some(l=>l.id==="L"+n))n++;
+      f.levels.push({id:"L"+n,name:"L"+n+" · Nuovo livello"});
+      save();refresh();
+    }
+    function move(i,dir){
+      const j=i+dir;
+      if(j<0||j>=f.levels.length)return;
+      const t=f.levels[i];f.levels[i]=f.levels[j];f.levels[j]=t;
+      save();refresh();
+    }
+    function refresh(){
+      body.innerHTML="";
+      f.levels.forEach((l,i)=>{
+        const row=el("div",{style:"margin-top:14px"});
+        row.append(el("div",{style:"display:flex;align-items:center;gap:6px"},
+          el("div",{class:"lbl",style:"flex:1;min-width:0"},
+            l.id, S.levels[fid]===l.id?el("span",{class:"pill ok",style:"margin-left:8px"},"attuale"):null),
+          el("button",{class:"iconbtn",title:"Sposta su",onclick:()=>move(i,-1)},"↑"),
+          el("button",{class:"iconbtn",title:"Sposta giù",onclick:()=>move(i,1)},"↓"),
+          el("button",{class:"iconbtn",title:"Togli",onclick:()=>removeLevel(i)},"🗑")));
+        row.append(el("input",{value:levelNameOf(f,l.id),placeholder:"nome del livello",
+          onchange:e=>{const v=e.target.value.trim();l.name=v?(l.id+" · "+v):l.id;save();}}));
+        body.append(row);
+      });
+      body.append(el("button",{class:"btn ghost small",style:"margin-top:16px",onclick:addLevel},
+        "+ Aggiungi livello"));
+      body.append(el("div",{class:"sub",style:"margin-top:8px"},
+        "Gli esercizi si agganciano ai livelli dal loro “Attivo dal livello”, qui sotto in Esercizi."));
+    }
+    refresh();
+    s.append(el("div",{class:"actions"},
+      el("button",{class:"btn primary",onclick:()=>{closeSheet();render();}},"Fatto")));
+  });
 }
 
 function syncCard(){

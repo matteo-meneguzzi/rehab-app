@@ -6,7 +6,7 @@ const backup=global.__store["recupero_v1"];
 const src=fs.readFileSync(process.env.MODEL,"utf8")+`
 module.exports={get S(){return S},set S(v){S=v},seed,load,migrate,migrateToItems,syncDayItems,
  ensureDay,itemsOf,sortItems,fronteDayStatus,dayMissing,levelAtDate,dayType,todayISO,save,
- itemFromCatalog,streak,day};`;
+ itemFromCatalog,streak,streakInfo,day,fronte,levelNameOf,openLevelsEditor};`;
 const f=path.join(DIR,"_model_gen.js");
 fs.writeFileSync(f,src);
 const M=require(f);
@@ -84,6 +84,35 @@ for(const f of S.fronti)rec.morning[f.id]="ok";
 ok(M.dayMissing(oggi)===0,"dayMissing = 0 quando tutto è compilato");
 rec.items[0].status=null;
 ok(M.dayMissing(oggi)===1,"dayMissing = 1 togliendo una selezione");
+
+console.log("\n— STRISCIA E GIORNI DIMENTICATI —");
+// scenario pulito: si costruisce una serie di giornate registrate a partire da ieri
+const S2=M.S;
+S2.createdAt="2026-01-01";
+const setDay=(d,stato)=>{
+  if(stato===null){delete S2.days[d];return;}
+  S2.days[d]={type:"rest",committed:true,levels:{avambraccio:"L1",pettorale:"L2",pubalgia:"L0"},
+    morning:{avambraccio:stato,pettorale:stato,pubalgia:stato},morningNote:{},items:[]};
+};
+const D=i=>{const t=new Date();t.setDate(t.getDate()-i);
+  return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");};
+S2.days={};
+for(let i=1;i<=6;i++)setDay(D(i),"ok");
+ok(M.streak("avambraccio")===6,"6 giorni puliti di fila → striscia 6 ("+M.streak("avambraccio")+")");
+
+setDay(D(3),null); // un giorno dimenticato nel mezzo
+ok(M.streak("avambraccio")===5,"un giorno dimenticato NON azzera: striscia 5 ("+M.streak("avambraccio")+")");
+ok(M.streakInfo("avambraccio").gaps===1,"e viene segnalato come 1 giorno non compilato");
+
+setDay(D(2),null); // due buchi consecutivi
+ok(M.streak("avambraccio")===4,"due buchi di fila si tollerano ancora ("+M.streak("avambraccio")+")");
+setDay(D(4),null); // tre buchi consecutivi (2,3,4)
+ok(M.streak("avambraccio")===1,"tre buchi di fila fermano la striscia ("+M.streak("avambraccio")+")");
+
+S2.days={};
+for(let i=1;i<=6;i++)setDay(D(i),"ok");
+setDay(D(3),"peggio"); // giornata registrata ma peggiorata
+ok(M.streak("avambraccio")===2,"una giornata PEGGIORATA spezza eccome ("+M.streak("avambraccio")+")");
 
 console.log(fail?`\n${fail} TEST FALLITI\n`:"\nTUTTI I TEST PASSATI\n");
 process.exit(fail?1:0);

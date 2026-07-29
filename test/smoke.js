@@ -3,8 +3,8 @@ require("./stub.js");
 global.__store["recupero_v1"]=fs.readFileSync(process.env.FIXTURE,"utf8");
 const src=fs.readFileSync(process.env.MODEL,"utf8")+`
 module.exports={viewOggi,viewProgressi,viewStorico,viewSetup,openDaySheet,openLevelSheet,
- openExerciseSheet,exportSpecialist,markAllOk,markTrainOk,clearTrain,clearAll,askRegister,
- updateStickybar,setHeader,drawExPain,drawPain,todayISO,addDays,get S(){return S}};`;
+ openExerciseSheet,openLevelsEditor,exportSpecialist,markAllOk,markTrainOk,clearTrain,clearAll,askRegister,
+ updateStickybar,setHeader,drawExPain,drawPain,todayISO,addDays,openLevelsEditor,get S(){return S}};`;
 const f=path.join(__dirname,"_smoke_gen.js");fs.writeFileSync(f,src);
 const M=require(f);
 
@@ -36,6 +36,7 @@ run("openDaySheet giorno con orfani",()=>M.openDaySheet("2026-07-24"));
 run("openLevelSheet",()=>M.openLevelSheet("pettorale"));
 run("openExerciseSheet (nuovo)",()=>M.openExerciseSheet(null));
 run("openExerciseSheet (modifica)",()=>M.openExerciseSheet("e_wrist"));
+for(const f of M.S.fronti)run("openLevelsEditor "+f.id,()=>M.openLevelsEditor(f.id));
 
 console.log(fail?`\n${fail} FALLITI\n`:"\nNESSUN ERRORE A RUNTIME\n");
 process.exit(fail?1:0);
