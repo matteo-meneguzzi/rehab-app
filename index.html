@@ -200,6 +200,20 @@
   .exadmin .er{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
   .exadmin .er .en{font-weight:600;font-size:14px} .exadmin .er .ed{font-size:12px;color:var(--ink-3)}
   .iconbtn{border:1px solid var(--border);background:var(--surface-2);border-radius:8px;padding:6px 9px;font-size:13px;font-weight:600}
+  /* esercizi raggruppati per livello, con trascinamento fra gruppi */
+  .lvgroup{border:1px dashed transparent;border-radius:10px;padding:2px 8px;margin-top:8px;
+    transition:background .12s,border-color .12s}
+  .lvgroup.over{border-color:var(--accent);background:var(--accent-weak)}
+  .lvghdr{display:flex;align-items:baseline;gap:8px;font-size:12px;font-weight:700;
+    color:var(--ink-2);text-transform:uppercase;letter-spacing:.04em;padding:6px 0}
+  .lvghdr .cur{text-transform:none;letter-spacing:0;font-weight:600;color:var(--accent)}
+  .lvgempty{font-size:12px;color:var(--ink-3);font-style:italic;padding:4px 0 8px}
+  .grip{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
+    color:var(--ink-3);font-size:16px;padding:6px 4px;line-height:1}
+  .er.dragging{opacity:.35}
+  .dragghost{position:fixed;z-index:9999;pointer-events:none;opacity:.95;
+    background:var(--surface);border:1px solid var(--accent);border-radius:10px;
+    padding:8px 12px;box-shadow:var(--shadow);max-width:70vw}
 
   /* tab bar */
   .tabbar{position:fixed;left:0;right:0;bottom:0;background:color-mix(in srgb,var(--surface) 92%,transparent);
@@ -1336,20 +1350,33 @@ function viewSetup(){
   const ex=el("div",{class:"card"});
   ex.append(el("div",{class:"stat"}, el("h2",{},"Esercizi"),
     el("button",{class:"iconbtn",onclick:()=>openExerciseSheet(null)},"+ Aggiungi")));
-  ex.append(el("div",{class:"sub"},"Il catalogo da cui si compone la giornata: compaiono in “Oggi” secondo il livello. "+
-    "Modificarli qui NON tocca le giornate già registrate — quelle si correggono dallo Storico."));
+  ex.append(el("div",{class:"sub"},"Il catalogo da cui si compone la giornata, diviso per livello: un esercizio "+
+    "compare in “Oggi” dal suo livello in su. Trascina ⠿ per spostarlo da un livello all'altro. "+
+    "Modificare qui NON tocca le giornate già registrate — quelle si correggono dallo Storico."));
   for(const f of S.fronti){
-    ex.append(el("div",{class:"frontehdr",style:"margin-top:14px"},
+    ex.append(el("div",{class:"frontehdr",style:"margin-top:18px"},
       el("span",{class:"bar",style:`background:${f.color}`}), el("h3",{style:"font-family:var(--serif);font-size:15px"},f.name)));
-    const box=el("div",{class:"exadmin"});
-    S.exercises.filter(e=>e.fronte===f.id).forEach(e=>{
-      box.append(el("div",{class:"er"},
-        el("div",{style:"flex:1;min-width:0"}, el("div",{class:"en"},e.name),
-          el("div",{class:"ed"},`${e.dose} · ${e.cad==="daily"?"ogni giorno":"alterni"} · da ${e.minLevel}`)),
-        el("button",{class:"iconbtn",onclick:()=>openExerciseSheet(e.id)},"✎"),
-        el("button",{class:"iconbtn",onclick:()=>confirmSheet("Eliminare l'esercizio?","“"+e.name+"” verrà rimosso dalla lista.","Elimina",()=>{S.exercises=S.exercises.filter(x=>x.id!==e.id);save();render();},true)},"🗑")));
-    });
-    ex.append(box);
+    for(const l of f.levels){
+      const grp=el("div",{class:"lvgroup","data-fronte":f.id,"data-level":l.id});
+      grp.append(el("div",{class:"lvghdr"}, l.name,
+        S.levels[f.id]===l.id?el("span",{class:"cur"},"· dove sei ora"):null));
+      const list=S.exercises.filter(e=>e.fronte===f.id&&e.minLevel===l.id);
+      if(!list.length)grp.append(el("div",{class:"lvgempty"},"Nessun esercizio entra a questo livello."));
+      const box=el("div",{class:"exadmin"});
+      for(const e of list)box.append(exerciseAdminRow(e));
+      grp.append(box);
+      ex.append(grp);
+    }
+    // esercizi il cui minLevel non corrisponde più a nessun livello della scala
+    const orfani=S.exercises.filter(e=>e.fronte===f.id&&!f.levels.some(l=>l.id===e.minLevel));
+    if(orfani.length){
+      const grp=el("div",{class:"lvgroup","data-fronte":f.id,"data-level":f.levels[0].id});
+      grp.append(el("div",{class:"lvghdr"},"Livello non più esistente"));
+      const box=el("div",{class:"exadmin"});
+      for(const e of orfani)box.append(exerciseAdminRow(e));
+      grp.append(box);
+      ex.append(grp);
+    }
   }
   frag.append(ex);
 
@@ -1367,6 +1394,84 @@ function viewSetup(){
 
   frag.append(el("div",{class:"foot"},"Recupero · diario personale · v1"));
   return frag;
+}
+
+function exerciseAdminRow(e){
+  const row=el("div",{class:"er","data-exid":e.id});
+  const grip=el("div",{class:"grip",title:"Trascina per cambiare livello","aria-hidden":"true"},"⠿");
+  grip.addEventListener("pointerdown",ev=>startExDrag(ev,e,row));
+  row.append(grip,
+    el("div",{style:"flex:1;min-width:0"}, el("div",{class:"en"},e.name),
+      el("div",{class:"ed"},`${e.dose} · ${e.cad==="daily"?"ogni giorno":"alterni"}`)),
+    el("button",{class:"iconbtn",onclick:()=>openExerciseSheet(e.id)},"✎"),
+    el("button",{class:"iconbtn",onclick:()=>confirmSheet("Eliminare l'esercizio?",
+      "“"+e.name+"” verrà tolto dal catalogo. Le giornate già registrate lo conservano.","Elimina",
+      ()=>{S.exercises=S.exercises.filter(x=>x.id!==e.id);save();render();},true)},"🗑"));
+  return row;
+}
+
+/* ---- trascinamento di un esercizio fra i livelli ----
+   Pointer events invece del drag&drop HTML5, che col dito su iOS non parte proprio.
+   Il "fantasma" segue il puntatore; il gruppo sotto al dito si illumina; al rilascio
+   l'esercizio prende il livello (e il fronte) di quel gruppo. */
+let EXDRAG=null;
+function startExDrag(ev,e,row){
+  if(EXDRAG||ev.button)return;
+  ev.preventDefault();
+  const ghost=el("div",{class:"dragghost"},e.name);
+  document.body.append(ghost);
+  row.classList.add("dragging");
+  EXDRAG={e,row,ghost,over:null};
+  moveExDrag(ev);
+  window.addEventListener("pointermove",moveExDrag);
+  window.addEventListener("pointerup",endExDrag);
+  window.addEventListener("pointercancel",endExDrag);
+}
+function moveExDrag(ev){
+  if(!EXDRAG)return;
+  ev.preventDefault();
+  EXDRAG.ghost.style.left=(ev.clientX+14)+"px";
+  EXDRAG.ghost.style.top=(ev.clientY-14)+"px";
+  const el0=document.elementFromPoint(ev.clientX,ev.clientY);
+  const grp=el0&&el0.closest?el0.closest(".lvgroup"):null;
+  if(grp!==EXDRAG.over){
+    if(EXDRAG.over)EXDRAG.over.classList.remove("over");
+    if(grp)grp.classList.add("over");
+    EXDRAG.over=grp;
+  }
+  // autoscroll ai bordi, altrimenti su liste lunghe non si arriva al livello giusto
+  const m=70;
+  if(ev.clientY<m)window.scrollBy(0,-14);
+  else if(ev.clientY>window.innerHeight-m)window.scrollBy(0,14);
+}
+function endExDrag(ev){
+  if(!EXDRAG)return;
+  const {e,row,ghost,over}=EXDRAG;
+  window.removeEventListener("pointermove",moveExDrag);
+  window.removeEventListener("pointerup",endExDrag);
+  window.removeEventListener("pointercancel",endExDrag);
+  ghost.remove();row.classList.remove("dragging");
+  if(over)over.classList.remove("over");
+  EXDRAG=null;
+  if(!over)return;
+  const lid=over.getAttribute("data-level"), fid=over.getAttribute("data-fronte");
+  if(!lid)return;
+  if(!moveExerciseTo(e,fid,lid))return;
+  save();render();
+  const f=fronte(fid);
+  toast(f.id===e.fronte&&fid===e.fronte?`“${e.name}” → ${lid}`:`“${e.name}” → ${f.name} ${lid}`);
+}
+// Sposta un esercizio del catalogo su un altro livello (ed eventualmente un altro fronte),
+// rimettendolo in fondo al suo nuovo gruppo così l'ordine del catalogo resta leggibile.
+// Ritorna false se non c'era niente da fare.
+function moveExerciseTo(e,fid,lid){
+  if(e.minLevel===lid&&e.fronte===fid)return false;
+  e.fronte=fid;e.minLevel=lid;
+  S.exercises=S.exercises.filter(x=>x.id!==e.id);
+  let last=-1;
+  S.exercises.forEach((x,i)=>{if(x.fronte===fid&&x.minLevel===lid)last=i;});
+  S.exercises.splice(last>=0?last+1:S.exercises.length,0,e);
+  return true;
 }
 
 function openLevelsEditor(fid){

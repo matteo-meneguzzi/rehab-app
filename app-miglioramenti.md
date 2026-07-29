@@ -25,6 +25,16 @@
   perché a quel punto non stai più monitorando. Una giornata registrata *peggiorata* spezza
   come prima. In "Progressi" i buchi vengono dichiarati sotto la striscia.
 
+### ✅ Catalogo per livello con trascinamento (2026-07-29)
+- La lista Esercizi in Setup è raggruppata **per livello** dentro ogni fronte, livelli vuoti
+  compresi (servono da bersaglio). Trascinando la maniglia ⠿ si sposta un esercizio da un
+  livello all'altro, anche fra fronti diversi.
+- Costruito su **pointer events**, non sul drag&drop HTML5: quest'ultimo col dito su iOS
+  non parte proprio. Il gruppo sotto al dito si illumina; c'è autoscroll ai bordi.
+- La logica sta in `moveExerciseTo()`, separata dal DOM e testata. Un esercizio con
+  `minLevel` che non esiste più finisce nel gruppo "Livello non più esistente", da cui si
+  può trascinare via.
+
 ### ✅ Livelli editabili e catalogo allineato al piano (2026-07-29)
 - **Livelli:** Setup → "Livelli e gate" → "Scala <fronte>": rinomina, riordina, aggiungi o
   togli un livello (`openLevelsEditor`). Non si può togliere il livello attuale; togliendone

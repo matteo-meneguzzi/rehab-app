@@ -6,7 +6,7 @@ const backup=global.__store["recupero_v1"];
 const src=fs.readFileSync(process.env.MODEL,"utf8")+`
 module.exports={get S(){return S},set S(v){S=v},seed,load,migrate,migrateToItems,syncDayItems,
  ensureDay,itemsOf,sortItems,fronteDayStatus,dayMissing,levelAtDate,dayType,todayISO,save,
- itemFromCatalog,streak,streakInfo,day,fronte,levelNameOf,openLevelsEditor};`;
+ itemFromCatalog,streak,streakInfo,day,fronte,levelNameOf,openLevelsEditor,moveExerciseTo};`;
 const f=path.join(DIR,"_model_gen.js");
 fs.writeFileSync(f,src);
 const M=require(f);
@@ -113,6 +113,28 @@ S2.days={};
 for(let i=1;i<=6;i++)setDay(D(i),"ok");
 setDay(D(3),"peggio"); // giornata registrata ma peggiorata
 ok(M.streak("avambraccio")===2,"una giornata PEGGIORATA spezza eccome ("+M.streak("avambraccio")+")");
+
+console.log("\n— SPOSTARE UN ESERCIZIO FRA I LIVELLI —");
+const S3=M.S;
+const wrist=S3.exercises.find(x=>x.id==="e_wrist");
+ok(M.moveExerciseTo(wrist,"avambraccio","L3")===true,"spostato a L3");
+ok(wrist.minLevel==="L3","il minLevel è cambiato");
+ok(M.moveExerciseTo(wrist,"avambraccio","L3")===false,"rilasciarlo dov'era già non fa nulla");
+const idx=S3.exercises.findIndex(x=>x.id==="e_wrist");
+const dopo=S3.exercises.slice(idx+1).filter(x=>x.fronte==="avambraccio"&&x.minLevel==="L3");
+ok(dopo.length===0,"finisce in fondo al gruppo del nuovo livello");
+ok(S3.exercises.filter(x=>x.id==="e_wrist").length===1,"non viene duplicato");
+// una giornata registrata che contiene quell'esercizio (i test della striscia hanno
+// azzerato S.days, quindi la ricostruiamo qui)
+S3.days["2026-07-20"]={type:"train",committed:true,
+  levels:{avambraccio:"L1",pettorale:"L2",pubalgia:"L0"},morning:{},morningNote:{},
+  items:[{uid:"i_x",exId:"e_wrist",fronte:"avambraccio",name:"Wrist curl eccentrico",
+    dose:"3×12",cad:"alt",status:"ok",note:"",manual:false}]};
+M.moveExerciseTo(wrist,"pubalgia","L0");
+ok(wrist.fronte==="pubalgia"&&wrist.minLevel==="L0","si può spostare anche su un altro fronte");
+const rigo=S3.days["2026-07-20"].items[0];
+ok(rigo.fronte==="avambraccio"&&rigo.name==="Wrist curl eccentrico",
+  "la giornata registrata conserva fronte e nome di allora");
 
 console.log(fail?`\n${fail} TEST FALLITI\n`:"\nTUTTI I TEST PASSATI\n");
 process.exit(fail?1:0);
