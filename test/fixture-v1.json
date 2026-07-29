@@ -1,0 +1,471 @@
+{
+ "version": 1,
+ "createdAt": "2026-07-24",
+ "lastBackup": "2026-07-25",
+ "theme": "light",
+ "fronti": [
+  {
+   "id": "avambraccio",
+   "name": "Avambraccio",
+   "color": "#7a4f7f",
+   "redFlags": [
+    "Dolore che migra dal ventre muscolare verso l'osso (epicondilo laterale) e lì s'intensifica",
+    "Formicolii/intorpidimento alle dita o perdita di forza",
+    "Nessun miglioramento dopo 3 settimane"
+   ],
+   "levels": [
+    {
+     "id": "L0",
+     "name": "L0 · Acuto"
+    },
+    {
+     "id": "L1",
+     "name": "L1 · Carico base"
+    },
+    {
+     "id": "L2",
+     "name": "L2 · Carico progressivo"
+    },
+    {
+     "id": "L3",
+     "name": "L3 · Tirate supina"
+    },
+    {
+     "id": "L4",
+     "name": "L4 · Tirate progressive"
+    },
+    {
+     "id": "L5",
+     "name": "L5 · Allenamento pieno"
+    }
+   ]
+  },
+  {
+   "id": "pettorale",
+   "name": "Pettorale",
+   "color": "#3f7d9d",
+   "redFlags": [
+    "Schiocco/strappo durante una serie",
+    "Livido esteso su torace o interno braccio",
+    "Deformità/avvallamento del pettorale",
+    "Perdita di forza netta in adduzione vs lato sano",
+    "Dolore notturno intenso, formicolii/intorpidimento nel braccio/mano"
+   ],
+   "levels": [
+    {
+     "id": "L0",
+     "name": "L0 · Mobilità"
+    },
+    {
+     "id": "L1",
+     "name": "L1 · Isometrico"
+    },
+    {
+     "id": "L2",
+     "name": "L2 · Push-up regredito"
+    },
+    {
+     "id": "L3",
+     "name": "L3 · Push-up progressivo"
+    },
+    {
+     "id": "L4",
+     "name": "L4 · Allenamento pieno"
+    }
+   ]
+  },
+  {
+   "id": "pubalgia",
+   "name": "Pubalgia",
+   "color": "#c98a1c",
+   "redFlags": [
+    "Rigonfiamento/nodulo all'inguine o addome, specie se cresce sotto sforzo o con la tosse",
+    "Dolore forte e continuo, nausea/vomito",
+    "Un nodulo che diventa duro, dolente e non rientra"
+   ],
+   "levels": [
+    {
+     "id": "L0",
+     "name": "L0 · Routine base"
+    },
+    {
+     "id": "L1",
+     "name": "L1 · Progressione base"
+    },
+    {
+     "id": "L2",
+     "name": "L2 · Core sotto carico"
+    },
+    {
+     "id": "L3",
+     "name": "L3 · Adduttori sotto carico"
+    },
+    {
+     "id": "L4",
+     "name": "L4 · Rientro pattern"
+    },
+    {
+     "id": "L5",
+     "name": "L5 · Allenamento pieno + cardio"
+    }
+   ]
+  }
+ ],
+ "levels": {
+  "avambraccio": "L1",
+  "pettorale": "L2",
+  "pubalgia": "L0"
+ },
+ "levelSince": {
+  "avambraccio": "2026-07-24",
+  "pettorale": "2026-07-25",
+  "pubalgia": "2026-07-24"
+ },
+ "gateWeeks": {
+  "avambraccio": 1,
+  "pettorale": 1,
+  "pubalgia": 2
+ },
+ "gateChecks": {
+  "avambraccio": {
+   "L1": [
+    "Le 12 rip di wrist curl sono facili sotto 3/10"
+   ]
+  },
+  "pettorale": {
+   "L0": [
+    "Mobilità spalla indolore a range pieno",
+    "Isometrico T4 non fa male"
+   ],
+   "L1": [
+    "Isometrico adduzione all'80% indolore"
+   ]
+  },
+  "pubalgia": {
+   "L0": [
+    "Nessun fastidio, anche i giorni dopo, per tutto il periodo"
+   ]
+  }
+ },
+ "checksDone": {},
+ "exercises": [
+  {
+   "id": "e_grip",
+   "fronte": "avambraccio",
+   "name": "Grip isometrico",
+   "cad": "daily",
+   "dose": "4×30–45s @50–60%",
+   "minLevel": "L0",
+   "load": {
+    "label": "%",
+    "unit": "%"
+   }
+  },
+  {
+   "id": "e_wrist",
+   "fronte": "avambraccio",
+   "name": "Wrist curl eccentrico",
+   "cad": "alt",
+   "dose": "3×12 · 1s su / 4s giù",
+   "minLevel": "L1",
+   "load": {
+    "label": "Peso",
+    "unit": "kg"
+   }
+  },
+  {
+   "id": "e_hammer",
+   "fronte": "avambraccio",
+   "name": "Rotazioni martello",
+   "cad": "alt",
+   "dose": "3×10",
+   "minLevel": "L1",
+   "load": null
+  },
+  {
+   "id": "e_mob",
+   "fronte": "pettorale",
+   "name": "Mobilità spalla (5 mov.)",
+   "cad": "daily",
+   "dose": "8–10 rip cad.",
+   "minLevel": "L0",
+   "load": null
+  },
+  {
+   "id": "e_resp",
+   "fronte": "pubalgia",
+   "name": "Respiro + trasverso",
+   "cad": "daily",
+   "dose": "8–10",
+   "minLevel": "L0",
+   "load": null
+  },
+  {
+   "id": "e_sque",
+   "fronte": "pubalgia",
+   "name": "Squeeze gambe distese",
+   "cad": "daily",
+   "dose": "50%, 3x30s",
+   "minLevel": "L0",
+   "load": null
+  },
+  {
+   "id": "e_add_band",
+   "fronte": "pettorale",
+   "name": "Adduzione orizzontale con elastico",
+   "cad": "alt",
+   "dose": "3×10–12 lente per lato",
+   "minLevel": "L2",
+   "load": null
+  },
+  {
+   "id": "e_pushup",
+   "fronte": "pettorale",
+   "name": "Push-up ginocchia",
+   "cad": "alt",
+   "dose": "volume dimezzato · ginocchia→normale · su pugni/maniglie",
+   "minLevel": "L3",
+   "load": null
+  },
+  {
+   "id": "e_bridge",
+   "fronte": "pubalgia",
+   "name": "Bridge glutei (piedi uniti, ginocchia aperte)",
+   "cad": "daily",
+   "dose": "3×30s",
+   "minLevel": "L0",
+   "load": null
+  },
+  {
+   "id": "e_birddog",
+   "fronte": "pubalgia",
+   "name": "Bird dog solo-gambe (braccia a terra)",
+   "cad": "daily",
+   "dose": "alterna gamba, controllato",
+   "minLevel": "L0",
+   "load": null
+  },
+  {
+   "id": "e_crunch",
+   "fronte": "pubalgia",
+   "name": "Plank-crunch gambe sollevate",
+   "cad": "daily",
+   "dose": "gambe verso l'alto",
+   "minLevel": "L0",
+   "load": null
+  },
+  {
+   "id": "e_deadbug",
+   "fronte": "pubalgia",
+   "name": "Dead bug (anti-estensione)",
+   "cad": "daily",
+   "dose": "tempi brevi, mai a cedimento",
+   "minLevel": "L0",
+   "load": null
+  }
+ ],
+ "days": {
+  "2026-07-24": {
+   "type": "rest",
+   "morning": {
+    "avambraccio": "lieve",
+    "pettorale": "ok",
+    "pubalgia": "ok"
+   },
+   "pain": {},
+   "ex": {
+    "e_grip": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_wrist": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_hammer": {
+     "status": "lieve",
+     "note": ""
+    },
+    "e_mob": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_resp": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_knee": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_add": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_fly": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_sque": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_isopett": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_add_band": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_pushup": {
+     "status": "peggio",
+     "note": ""
+    },
+    "e_croci": {
+     "status": null,
+     "note": ""
+    },
+    "e_bridge": {
+     "status": "ok",
+     "note": "",
+     "load": null
+    },
+    "e_birddog": {
+     "status": "ok",
+     "note": "",
+     "load": null
+    },
+    "e_crunch": {
+     "status": "ok",
+     "note": "",
+     "load": null
+    },
+    "e_deadbug": {
+     "status": "nofatto",
+     "note": "",
+     "load": null
+    }
+   },
+   "sessNote": "",
+   "sessStatus": "ok",
+   "committed": true,
+   "morningNote": {}
+  },
+  "2026-07-25": {
+   "type": "rest",
+   "morning": {
+    "avambraccio": "lieve",
+    "pettorale": "ok",
+    "pubalgia": "ok"
+   },
+   "pain": {},
+   "ex": {
+    "e_grip": {
+     "status": null,
+     "note": ""
+    },
+    "e_mob": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_isopett": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_resp": {
+     "status": null,
+     "note": ""
+    },
+    "e_knee": {
+     "status": null,
+     "note": ""
+    },
+    "e_add": {
+     "status": null,
+     "note": ""
+    },
+    "e_fly": {
+     "status": null,
+     "note": ""
+    },
+    "e_sque": {
+     "status": null,
+     "note": ""
+    },
+    "e_wrist": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_hammer": {
+     "status": "ok",
+     "note": ""
+    },
+    "e_add_band": {
+     "status": null,
+     "note": ""
+    },
+    "e_pushup": {
+     "status": null,
+     "note": ""
+    },
+    "e_croci": {
+     "status": null,
+     "note": ""
+    },
+    "e_bridge": {
+     "status": null,
+     "note": ""
+    },
+    "e_birddog": {
+     "status": null,
+     "note": ""
+    },
+    "e_crunch": {
+     "status": null,
+     "note": ""
+    },
+    "e_deadbug": {
+     "status": null,
+     "note": ""
+    }
+   },
+   "sessNote": "",
+   "sessStatus": null,
+   "committed": true,
+   "morningNote": {}
+  }
+ },
+ "levelLog": [
+  {
+   "fronte": "avambraccio",
+   "level": "L1",
+   "date": "2026-07-24"
+  },
+  {
+   "fronte": "pettorale",
+   "level": "L0",
+   "date": "2026-07-24"
+  },
+  {
+   "fronte": "pubalgia",
+   "level": "L0",
+   "date": "2026-07-24"
+  },
+  {
+   "fronte": "pettorale",
+   "level": "L1",
+   "date": "2026-07-24"
+  },
+  {
+   "fronte": "pettorale",
+   "level": "L3",
+   "date": "2026-07-24"
+  },
+  {
+   "fronte": "pettorale",
+   "level": "L2",
+   "date": "2026-07-25"
+  }
+ ]
+}

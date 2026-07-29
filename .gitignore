@@ -1,0 +1,15 @@
+# Diario personale e note cliniche: restano su questo computer, fuori dal repo.
+# L'app pubblicata non ha bisogno di nessuno di questi file.
+*.json
+!test/fixture-v1.json
+
+forearm-rehab.md
+pectoral-rehab.md
+pubalgia-rehab.md
+piano-unificato.md
+livelli-progressione.md
+
+.idea/
+.claude/
+.DS_Store
+test/_*.js
