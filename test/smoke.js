@@ -5,7 +5,8 @@ const src=fs.readFileSync(process.env.MODEL,"utf8")+`
 module.exports={viewOggi,viewProgressi,viewStorico,viewSetup,viewEsercizi,openDaySheet,openLevelSheet,
  openExerciseSheet,openLevelsEditor,exportSpecialist,markAllOk,markTrainOk,clearTrain,clearAll,askRegister,
  updateStickybar,setHeader,drawExPain,drawPain,todayISO,addDays,openLevelsEditor,
- ensureDay,setSecDone,registerSec,reopenSec,get S(){return S}};`;
+ ensureDay,setSecDone,registerSec,reopenSec,get S(){return S},
+ get lvOpen(){return lvOpen},set lvOpen(v){lvOpen=v}};`;
 const f=path.join(__dirname,"_smoke_gen.js");fs.writeFileSync(f,src);
 const M=require(f);
 
@@ -18,6 +19,8 @@ run("viewProgressi",()=>M.viewProgressi());
 run("viewStorico",()=>M.viewStorico());
 run("viewSetup",()=>M.viewSetup());
 run("viewEsercizi",()=>M.viewEsercizi());
+run("viewEsercizi con un livello aperto a mano",()=>{
+  M.lvOpen={"avambraccio:L3":true};M.viewEsercizi();M.lvOpen={};});
 run("viste con un consiglio in catalogo",()=>{
   const e=M.S.exercises[0];e.sempre=true;
   M.viewEsercizi();M.viewOggi();M.openDaySheet(M.todayISO());

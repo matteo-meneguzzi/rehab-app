@@ -249,6 +249,11 @@
   .lvgroup.over{border-color:var(--accent);background:var(--accent-weak)}
   .lvghdr{display:flex;align-items:baseline;gap:8px;font-size:12px;font-weight:700;
     color:var(--ink-2);text-transform:uppercase;letter-spacing:.04em;padding:6px 0}
+  /* un livello si apre e si chiude: di default è aperto solo quello dove sei ora */
+  .lvtoggle{width:100%;background:transparent;border:0;text-align:left;font-family:inherit}
+  .lvtoggle .n{margin-left:auto;font-size:11px;font-weight:700;color:var(--ink-3);
+    border:1px solid var(--border);border-radius:20px;padding:1px 8px;letter-spacing:0}
+  .lvtoggle .chev{font-size:10px;color:var(--ink-3);letter-spacing:0}
   .lvghdr .cur{text-transform:none;letter-spacing:0;font-weight:600;color:var(--accent)}
   .lvgempty{font-size:12px;color:var(--ink-3);font-style:italic;padding:4px 0 8px}
   /* i consigli non si trascinano, quindi niente padding del .lvgroup: il pulsante resta
@@ -757,6 +762,10 @@ function contextMode(){const h=new Date().getHours();return h<15?"morning":"sess
 let TAB="oggi";
 let noteOpen={}; // exId -> bool (transient)
 let consOpen={}; // fronte -> bool: i consigli nascono chiusi a ogni apertura dell'app
+// "fronte:livello" -> bool. Di default è aperto solo il livello dove sei ora: gli altri
+// sono contesto, non lavoro di oggi. La scelta non si salva, riparte a ogni apertura.
+let lvOpen={};
+function lvIsOpen(fid,lid){const k=fid+":"+lid;return k in lvOpen?lvOpen[k]:S.levels[fid]===lid;}
 
 function setHeader(){
   const mode=contextMode();
@@ -1619,13 +1628,20 @@ function viewEsercizi(){
         onclick:()=>openExerciseSheet(null,{fronte:f.id})},"+ Esercizio")));
     for(const l of f.levels){
       const grp=el("div",{class:"lvgroup","data-fronte":f.id,"data-level":l.id});
-      grp.append(el("div",{class:"lvghdr"}, l.name,
-        S.levels[f.id]===l.id?el("span",{class:"cur"},"· dove sei ora"):null));
       const list=S.exercises.filter(e=>e.fronte===f.id&&e.minLevel===l.id&&!e.sempre);
-      if(!list.length)grp.append(el("div",{class:"lvgempty"},"Nessun esercizio entra a questo livello."));
-      const box=el("div",{class:"exadmin"});
-      for(const e of list)box.append(exerciseAdminRow(e));
-      grp.append(box);
+      const aperto=lvIsOpen(f.id,l.id);
+      grp.append(el("button",{class:"lvghdr lvtoggle","aria-expanded":String(aperto),
+        onclick:()=>{lvOpen[f.id+":"+l.id]=!aperto;render();}},
+        el("span",{},l.name),
+        S.levels[f.id]===l.id?el("span",{class:"cur"},"· dove sei ora"):null,
+        el("span",{class:"n"},String(list.length)),
+        el("span",{class:"chev"},aperto?"▲":"▼")));
+      if(aperto){
+        if(!list.length)grp.append(el("div",{class:"lvgempty"},"Nessun esercizio entra a questo livello."));
+        const box=el("div",{class:"exadmin"});
+        for(const e of list)box.append(exerciseAdminRow(e));
+        grp.append(box);
+      }
       ex.append(grp);
     }
     // consigli del fronte: fuori dalla scala dei livelli, perché non sono una progressione
@@ -1788,6 +1804,7 @@ function endExDrag(ev){
   const lid=over.getAttribute("data-level"), fid=over.getAttribute("data-fronte");
   if(!lid)return;
   if(!moveExerciseTo(e,fid,lid))return;
+  lvOpen[fid+":"+lid]=true; // apro il livello di destinazione, così vedi dov'è finito
   save();render();
   const f=fronte(fid);
   toast(f.id===e.fronte&&fid===e.fronte?`“${e.name}” → ${lid}`:`“${e.name}” → ${f.name} ${lid}`);
