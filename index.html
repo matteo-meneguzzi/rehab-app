@@ -1361,6 +1361,14 @@ function openDaySheet(d){
         body.append(statusSeg(MORNING_STATES,rec.morning[f.id],k=>{rec.morning[f.id]=k;save();refresh();}));
         body.append(noteBlock(()=>rec.morningNote[f.id],v=>rec.morningNote[f.id]=v,"m_"+f.id,"Come ti senti su questo fronte al risveglio…"));
       }
+      // In una giornata di riposo non c'è allenamento: niente livelli, niente esercizi.
+      // Restano visibili se quel giorno ha comunque degli esercizi (feedback o aggiunti
+      // a mano), altrimenti non ci sarebbe modo di correggerli o toglierli.
+      if(!isTrain && !(rec.items||[]).length){
+        body.append(el("div",{class:"cadsec"},"Allenamento"));
+        body.append(el("div",{class:"cadempty"},"Giornata di riposo: nessun esercizio."));
+        return;
+      }
       // Livelli DI QUESTA GIORNATA: salvati nel record, non dedotti
       body.append(el("div",{class:"cadsec"},"Livelli di questa giornata"));
       for(const f of S.fronti){
