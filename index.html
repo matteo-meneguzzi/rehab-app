@@ -1768,7 +1768,43 @@ function syncCard(){
         "Tolgo token e passphrase da questo browser. Le giornate restano qui e restano sul cloud.",
         "Scollega",cloudDisconnect,true)},"Scollega questo dispositivo"));
   }
+  c.append(diagBlock());
   return c;
+}
+
+/* ---- diagnostica ----
+   Se un dispositivo "si scollega" da solo non è l'app: token e passphrase li tocca
+   solo Scollega. Vuol dire che il browser ha dato alla pagina un localStorage diverso
+   o vuoto. Le due cause tipiche su telefono sono qui sotto: l'app aperta da un contesto
+   diverso (su iOS l'icona sulla Home e la scheda del browser hanno storage separati)
+   e lo storage non scrivibile (navigazione privata). */
+function appContext(){
+  if(navigator.standalone===true)return "App dalla Home";
+  if(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)return "App installata";
+  return "Scheda del browser";
+}
+function storageWritable(){
+  try{localStorage.setItem("__probe","1");localStorage.removeItem("__probe");return true;}
+  catch(e){return false;}
+}
+function diagBlock(){
+  const w=el("div",{});
+  w.append(el("div",{class:"rowsep"}));
+  w.append(el("div",{class:"eyebrow"},"Diagnostica"));
+  w.append(el("div",{class:"sub",style:"margin-bottom:6px"},
+    "Se ti ritrovi scollegato senza aver toccato niente, guarda queste due righe: "+
+    "l'app va collegata e riaperta sempre dallo stesso posto."));
+  const riga=(k,v,avviso)=>w.append(el("div",{class:"setrow"},
+    el("div",{class:"lbl",style:"font-size:13px"},k),
+    el("div",{class:"desc",style:avviso?"color:var(--red);text-align:right":"text-align:right"},v)));
+  const org=location.origin;
+  riga("Origine", org&&org!=="null"?org:"file locale (lo storage non dura)", !org||org==="null");
+  riga("Contesto", appContext());
+  const scriv=storageWritable();
+  riga("Memoria del browser", scriv?"scrivibile":"NON scrivibile (navigazione privata?)", !scriv);
+  riga("Credenziali su questo dispositivo", localStorage.getItem(CFG_KEY)?"presenti":"assenti");
+  riga("Giornate salvate qui", String(Object.keys(S.days||{}).filter(d=>!S.days[d].deleted).length));
+  return w;
 }
 
 function showTokenHelp(){

@@ -22,6 +22,7 @@ global.document={createElement:fakeEl,createDocumentFragment:()=>fakeEl("frag"),
 global.window={matchMedia:()=>({matches:false}),addEventListener(){},devicePixelRatio:1,scrollTo(){}};
 global.window.self=global.window;global.window.top=global.window;
 global.navigator={};
+global.location={origin:"https://esempio.test",href:"https://esempio.test/index.html"};
 global.requestAnimationFrame=fn=>fn();
 global.getComputedStyle=()=>({getPropertyValue:()=>""});
 global.URL={createObjectURL:()=>"blob:x",revokeObjectURL(){}};
