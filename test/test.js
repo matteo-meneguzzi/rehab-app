@@ -6,7 +6,8 @@ const backup=global.__store["recupero_v1"];
 const src=fs.readFileSync(process.env.MODEL,"utf8")+`
 module.exports={get S(){return S},set S(v){S=v},seed,load,migrate,migrateToItems,syncDayItems,
  ensureDay,itemsOf,sortItems,fronteDayStatus,dayMissing,levelAtDate,dayType,todayISO,save,
- itemFromCatalog,streak,streakInfo,day,fronte,levelNameOf,openLevelsEditor,moveExerciseTo};`;
+ itemFromCatalog,streak,streakInfo,day,fronte,levelNameOf,openLevelsEditor,moveExerciseTo,
+ setDayType,secDone,setSecDone,morningMissing,trainMissing};`;
 const f=path.join(DIR,"_model_gen.js");
 fs.writeFileSync(f,src);
 const M=require(f);
@@ -75,6 +76,49 @@ const manuale={uid:"i_test",exId:null,fronte:"pubalgia",name:"Camminata",dose:"2
   cad:"daily",status:null,note:"",load:null,manual:true};
 rec.items.push(manuale); M.syncDayItems(rec,oggi);
 ok(rec.items.some(x=>x.uid==="i_test"),"un esercizio aggiunto a mano sopravvive alla sync");
+
+console.log("\n— CAMBIO TIPO A MANO: RIALLINEA ANCHE SE REGISTRATA —");
+const dReg="2026-07-20";
+const recReg=M.ensureDay(dReg);
+recReg.type="rest"; M.syncDayItems(recReg,dReg); recReg.committed=true;
+ok(M.itemsOf(recReg,null,"alt").length===0,"la giornata registrata di riposo non ha alt");
+const toccata=M.setDayType(recReg,dReg,"train");
+ok(M.itemsOf(recReg,null,"alt").length>0,"passando ad allenamento gli alt compaiono anche da registrata");
+ok(toccata===true,"il cambio segnala che ha toccato una giornata registrata");
+const conFeedback=recReg.items.find(x=>x.cad!=="daily");
+conFeedback.status="ok";
+M.setDayType(recReg,dReg,"rest");
+ok(M.itemsOf(recReg,null,"alt").length===1&&recReg.items.some(x=>x.uid===conFeedback.uid),
+  "tornando a riposo restano solo gli alt con feedback");
+ok(M.setDayType(recReg,dReg,"rest")===false,"ri-premere lo stesso tipo non è un cambio");
+
+console.log("\n— REGISTRAZIONE PER SEZIONE —");
+const dSez="2026-07-19";
+const recSez=M.ensureDay(dSez);
+M.setDayType(recSez,dSez,"train");
+ok(!M.secDone(recSez,"morning")&&!M.secDone(recSez,"train"),"giornata nuova: nessuna sezione registrata");
+for(const f of S.fronti)recSez.morning[f.id]="ok";
+M.setSecDone(recSez,"morning",true);
+ok(M.secDone(recSez,"morning")&&recSez.committed===false,
+  "registrando solo la mattina la giornata NON è ancora definitiva");
+const nItems=recSez.items.length;
+for(const it of recSez.items)it.status="ok";
+M.setSecDone(recSez,"train",true);
+ok(recSez.committed===true,"registrate entrambe le sezioni la giornata è definitiva");
+// con l'allenamento registrato la lista esercizi non segue più il catalogo
+S.exercises.push({id:"e_nuovo",fronte:"avambraccio",name:"Esercizio nuovo",cad:"daily",
+  dose:"3×10",minLevel:"L0",load:null});
+M.ensureDay(dSez);
+ok(recSez.items.length===nItems,"sezione allenamento registrata: nessun esercizio si aggiunge da solo");
+M.setSecDone(recSez,"train",false);
+ok(recSez.committed===false,"riaprire una sezione riporta la giornata in bozza");
+M.ensureDay(dSez);
+ok(recSez.items.some(x=>x.exId==="e_nuovo"),"riaperta la sezione, la lista torna a seguire il catalogo");
+S.exercises.pop();
+
+console.log("\n— MIGRAZIONE: SEZIONI DELLE GIORNATE GIÀ REGISTRATE —");
+ok(M.secDone(S.days["2026-07-24"],"morning")&&M.secDone(S.days["2026-07-24"],"train"),
+  "una giornata registrata prima di questa versione ha entrambe le sezioni chiuse");
 
 console.log("\n— CONTEGGI E STATO —");
 const st=M.fronteDayStatus("2026-07-25","pettorale");

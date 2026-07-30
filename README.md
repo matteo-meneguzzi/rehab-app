@@ -11,7 +11,8 @@ degli esercizi *com'erano quel giorno*, feedback compreso.
 
 ```json
 "2026-07-25": {
-  "type": "train", "committed": true, "updatedAt": "2026-07-25T19:12:03.114Z",
+  "type": "train", "committed": true, "done": { "morning": true, "train": true },
+  "updatedAt": "2026-07-25T19:12:03.114Z",
   "levels":  { "avambraccio": "L1", "pettorale": "L2", "pubalgia": "L0" },
   "morning": { "avambraccio": "ok" },
   "items": [
@@ -22,10 +23,17 @@ degli esercizi *com'erano quel giorno*, feedback compreso.
 }
 ```
 
+Nella tab **Oggi** le due sezioni (mattina e allenamento) si registrano separatamente: `done`
+dice quali hai già chiuso — una sezione chiusa si mostra come recap in sola lettura, con un
+"✎ Modifica" per riaprirla. La giornata è `committed` (definitiva: conta per striscia, gate e
+grafici) solo quando entrambe sono registrate.
+
 Da cui la regola che governa tutto:
 
-- **bozze** → si riallineano da sole al catalogo quando cambi livello o tipo di giornata;
-- **giornate registrate** → mai toccate in automatico, solo col pulsante "⟳ Riallinea";
+- **bozze** → si riallineano da sole al catalogo quando cambi livello o tipo di giornata
+  (la lista esercizi finché la sezione allenamento è aperta);
+- **giornate registrate** → mai toccate in automatico, tranne quando cambi a mano il tipo
+  della giornata; per il resto solo col pulsante "⟳ Riallinea";
 - la sync col catalogo non rimuove mai un item con feedback o con `manual: true`;
 - tutto resta correggibile a posteriori dallo Storico, livello del giorno incluso.
 

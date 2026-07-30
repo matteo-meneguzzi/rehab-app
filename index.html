@@ -116,17 +116,27 @@
   .seg button{flex:1;border:0;background:transparent;border-radius:8px;padding:8px 6px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
   .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 
-  /* status segmented (5 or 4 state) */
-  .statuses{display:flex;gap:6px;margin-top:14px}
-  .st{flex:1;border:1px solid var(--border);background:var(--surface-2);border-radius:9px;
-    padding:7px 2px;font-size:11px;font-weight:700;color:var(--ink-3);display:flex;flex-direction:column;
-    align-items:center;gap:3px;line-height:1;min-width:0}
-  .st .ic{font-size:15px;line-height:1}
-  .st[aria-pressed="true"][data-k="ok"]{background:var(--ok-weak);border-color:var(--ok);color:var(--ok)}
-  .st[aria-pressed="true"][data-k="lieve"]{background:var(--warn-weak);border-color:var(--warn);color:var(--warn)}
-  .st[aria-pressed="true"][data-k="peggio"]{background:var(--bad-weak);border-color:var(--bad);color:var(--bad)}
-  .st[aria-pressed="true"][data-k="rosso"]{background:var(--red-weak);border-color:var(--red);color:var(--red)}
-  .st[aria-pressed="true"][data-k="nofatto"]{background:var(--muted-weak);border-color:var(--muted);color:var(--ink-2)}
+  /* Stato di un fronte / di un esercizio: quattro faccine per la scala del dolore,
+     "non fatto" fuori dalla fila perché non è un livello ma un'assenza di risposta.
+     Ogni pulsante porta già la sua tinta al 40%: la scala si legge anche da spenta. */
+  [data-k]{--c:var(--muted);--cw:var(--muted-weak)}
+  [data-k="ok"]{--c:var(--ok);--cw:var(--ok-weak)}
+  [data-k="lieve"]{--c:var(--warn);--cw:var(--warn-weak)}
+  [data-k="peggio"]{--c:var(--bad);--cw:var(--bad-weak)}
+  [data-k="rosso"]{--c:var(--red);--cw:var(--red-weak)}
+  .face{line-height:1;filter:saturate(.55) opacity(.7)}
+  [aria-pressed="true"] .face{filter:none}
+  .statuses{display:flex;gap:8px;margin-top:14px}
+  .st{flex:1;min-width:0;border:1px solid var(--border);border-radius:11px;padding:13px 4px;
+    background:color-mix(in srgb,var(--cw) 40%,var(--surface));
+    display:flex;align-items:center;justify-content:center;line-height:1}
+  .st .face{font-size:27px}
+  .st[aria-pressed="true"]{background:var(--cw);border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c)}
+  .skip{margin-left:auto;width:calc((100% - 24px) / 4);border:1px dashed var(--border);
+    background:transparent;border-radius:11px;padding:8px 4px;
+    display:inline-flex;align-items:center;justify-content:center;line-height:1;
+    font-size:12px;font-weight:600;color:var(--ink-3);white-space:nowrap}
+  .skip[aria-pressed="true"]{background:var(--muted-weak);border-style:solid;border-color:var(--muted);color:var(--ink-2)}
 
   /* exercise row */
   .ex{padding:18px 0}
@@ -151,6 +161,26 @@
 
   .frontehdr{display:flex;align-items:center;gap:8px}
   .frontehdr .bar{width:4px;height:18px;border-radius:3px}
+
+  /* recap di una sezione registrata: sola lettura, compatto */
+  .recap{margin-top:12px}
+  .recap .rsum{font-size:13px;color:var(--ink-2);padding:0 2px 10px}
+  .recap .ri{border-top:1px solid var(--border)}
+  .recap .rr{display:flex;align-items:center;gap:9px;padding:9px 2px}
+  .recap .rr .bar{width:4px;height:16px;border-radius:3px;flex:none}
+  .recap .rn{font-weight:600;font-size:14px}
+  .recap .rs{margin-left:auto;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;
+    font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;
+    border:1px solid var(--border);color:var(--ink-2)}
+  .recap .rs[data-k="ok"]{background:var(--ok-weak);border-color:var(--ok);color:var(--ok)}
+  .recap .rs[data-k="lieve"]{background:var(--warn-weak);border-color:var(--warn);color:var(--warn)}
+  .recap .rs[data-k="peggio"]{background:var(--bad-weak);border-color:var(--bad);color:var(--bad)}
+  .recap .rs[data-k="rosso"]{background:var(--red-weak);border-color:var(--red);color:var(--red)}
+  .recap .rs[data-k="nofatto"]{background:var(--muted-weak);border-color:var(--muted);color:var(--ink-3)}
+  .recap .rs .face{font-size:14px;filter:none}
+  .recap .rnote{font-size:12.5px;color:var(--ink-3);font-style:italic;padding:0 2px 9px}
+  .recap .rgrp{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;
+    color:var(--ink-3);padding:12px 2px 2px;border-top:1px solid var(--border)}
   .askmorning{background:var(--accent-weak);border-radius:10px;padding:10px 12px;margin:10px 0 4px}
   .askmorning .q{font-size:13.5px;font-weight:600;color:var(--ink)}
 
@@ -279,9 +309,10 @@
     .card{padding:16px}
     .rowsep{margin-left:-16px;margin-right:-16px}
     .greeting{font-size:23px}
-    .statuses{gap:5px}
-    .st{font-size:10px;padding:8px 1px;letter-spacing:0}
-    .st .ic{font-size:13px}
+    .statuses{gap:6px}
+    .st{padding:12px 2px}
+    .st .face{font-size:25px}
+    .skip{width:calc((100% - 18px) / 4)}
     .cad{font-size:9.5px;padding:2px 5px}
     .lvchip{padding:9px 7px}
     .lvchip .lv{font-size:16px}
@@ -344,12 +375,14 @@ function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show"
 
 /* ---------- seed / model ---------- */
 const KEY="recupero_v1";
+// una faccina per stato: nei selettori è l'unico contenuto del pulsante,
+// il nome resta nel tooltip e in aria-label (e per esteso nei recap)
 const STATES=[
-  {k:"ok",ic:"✓",lbl:"Ok"},
-  {k:"lieve",ic:"~",lbl:"Lieve"},
-  {k:"peggio",ic:"▼",lbl:"Peggio"},
-  {k:"rosso",ic:"‼",lbl:"Rosso"},
-  {k:"nofatto",ic:"–",lbl:"Non fatto"},
+  {k:"ok",ic:"🙂",lbl:"Ok"},
+  {k:"lieve",ic:"😐",lbl:"Lieve"},
+  {k:"peggio",ic:"😣",lbl:"Peggio"},
+  {k:"rosso",ic:"😫",lbl:"Rosso"},
+  {k:"nofatto",ic:"😶",lbl:"Non fatto"},
 ];
 const MORNING_STATES=STATES.filter(s=>s.k!=="nofatto");
 const STATUS_VAL={ok:0,lieve:3,peggio:6,rosso:9}; // mappatura numerica per i grafici
@@ -441,8 +474,10 @@ function seed(){
       {id:"e_copen",fronte:"pubalgia",name:"Copenhagen plank facilitato",cad:"alt",dose:"gamba su panca a metà coscia · 5–10s · pochissime rip",minLevel:"L3",load:null},
       {id:"e_squat",fronte:"pubalgia",name:"Squat (buca controllata, senza pausa)",cad:"alt",dose:"cura il bracing prima di scendere",minLevel:"L4",load:{label:"Peso",unit:"kg"}},
     ],
-    // iso -> {type:'train'|'rest', committed, levels:{fronte:levelId}, morning:{fronte:state},
+    // iso -> {type:'train'|'rest', committed, done:{morning,train}, levels:{fronte:levelId}, morning:{fronte:state},
     //         morningNote:{fronte:testo}, items:[…]}
+    // done = quali delle due sezioni di "Oggi" hai già registrato: una sezione registrata si
+    // mostra come recap in sola lettura. committed (giornata definitiva) = done su entrambe.
     // Ogni giornata è AUTOSUFFICIENTE: si porta dentro il livello di ogni fronte e la lista
     // degli esercizi com'erano quel giorno (nome, dose, cadenza) più il feedback.
     // item: {uid, exId, fronte, name, dose, cad, status, note, load, manual}
@@ -459,6 +494,9 @@ function migrate(p,addNew){const base=seed();
   // shallow ensure keys exist
   for(const k of["gateWeeks","gateChecks","checksDone","levels","levelSince","levelLog","fronti","exercises","days"]) if(p[k]==null)p[k]=base[k];
   for(const d in p.days){if(p.days[d].committed==null)p.days[d].committed=true; if(p.days[d].morningNote==null)p.days[d].morningNote={};} // già inseriti = registrati
+  // sezioni: una giornata registrata prima di questa versione ha entrambe le sezioni chiuse
+  for(const d in p.days)if(p.days[d].done==null)
+    p.days[d].done=p.days[d].committed?{morning:true,train:true}:{};
   // Solo all'avvio normale (non su import) allineiamo il catalogo alle revisioni del seed:
   // su import il JSON è la verità e va rispettato così com'è.
   // seedRev evita che un esercizio cancellato apposta ritorni a ogni avvio.
@@ -607,14 +645,36 @@ function syncDayItems(rec,d){
     rec.items.push(itemFromCatalog(e));}
   sortItems(rec);
 }
+// Cambiare il tipo a mano è una scelta esplicita: gli esercizi si riallineano
+// sempre, anche su una giornata già registrata (status, note e aggiunte a mano
+// restano comunque, ci pensa syncDayItems).
+// Ritorna true se il riallineamento ha toccato una giornata già registrata,
+// così chi chiama può dirlo con un toast.
+function setDayType(rec,d,t){
+  const changed=dayType(rec,d)!==t;
+  rec.type=t;
+  if(changed)syncDayItems(rec,d);
+  save();
+  return changed&&!!rec.committed;
+}
+/* ---- registrazione per sezione (tab Oggi) ---- */
+// Le due sezioni si registrano separatamente; la giornata è definitiva solo con entrambe.
+const SECTIONS=["morning","train"];
+const SEC_LABEL={morning:"la mattina",train:"l'allenamento"};
+function secDone(rec,sec){return !!(rec.done&&rec.done[sec]);}
+function syncCommitted(rec){rec.committed=SECTIONS.every(s=>secDone(rec,s));}
+function setSecDone(rec,sec,v){if(!rec.done)rec.done={};rec.done[sec]=!!v;syncCommitted(rec);}
 function ensureDay(d){
-  if(!S.days[d]||S.days[d].deleted)S.days[d]={type:null,committed:false,levels:{},morning:{},morningNote:{},items:[]};
+  if(!S.days[d]||S.days[d].deleted)S.days[d]={type:null,committed:false,done:{},levels:{},morning:{},morningNote:{},items:[]};
   const rec=S.days[d];
   if(!rec.morningNote)rec.morningNote={};
+  // record arrivato da un dispositivo con la versione precedente
+  if(!rec.done)rec.done=rec.committed?{morning:true,train:true}:{};
   if(!rec.levels)rec.levels={};
   if(!Array.isArray(rec.items))rec.items=[];
   for(const f of S.fronti)if(!rec.levels[f.id])rec.levels[f.id]=levelAtDate(f.id,d);
-  if(!rec.committed)syncDayItems(rec,d);
+  // la lista esercizi segue il catalogo solo finché la sezione allenamento è aperta
+  if(!secDone(rec,"train"))syncDayItems(rec,d);
   return rec;
 }
 
@@ -708,10 +768,13 @@ function updateStickybar(){
       el("button",{class:"btn ghost small",style:"width:auto;color:var(--red);border-color:var(--red)",onclick:askReset},"Reset"));
   }else{
     const miss=dayMissing(todayISO());const ready=miss===0;
+    // il dock è la scorciatoia: registra in un colpo le sezioni ancora aperte
+    const aperte=SECTIONS.filter(s=>!secDone(rec,s));
     const note=el("div",{class:"docknote",style:"flex:1"}, ready
-      ? "Tutto compilato: puoi registrare."
+      ? "Tutto compilato: resta da registrare "+aperte.map(s=>SEC_LABEL[s]).join(" e ")+"."
       : `${miss===1?"Manca":"Mancano"} ${miss} selezion${miss===1?"e":"i"} per registrare.`);
-    const btn=el("button",{class:"btn primary small",style:"width:auto",onclick:ready?askRegister:null},"Registra");
+    const btn=el("button",{class:"btn primary small",style:"width:auto",onclick:ready?askRegister:null},
+      aperte.length===1?"Registra "+SEC_LABEL[aperte[0]]:"Registra tutto");
     if(!ready)btn.disabled=true;
     bar.append(note,btn);
   }
@@ -731,14 +794,24 @@ function render(){
 }
 
 /* ----- OGGI ----- */
+// la faccina è tutto il contenuto: il nome dello stato vive in aria-label e nel title
+function faceBtn(s,cls,current,onPick,label){
+  return el("button",{class:cls,"data-k":s.k,"aria-pressed":String(current===s.k),
+    "aria-label":s.lbl,title:s.lbl,onclick:()=>onPick(s.k)},
+    el("span",{class:"face","aria-hidden":"true"},s.ic), label?s.lbl:null);
+}
+// In fila solo la scala del dolore: "non fatto" è un'altra cosa e vive accanto alla nota.
 function statusSeg(states,current,onPick){
-  const wrap=el("div",{class:"statuses"});
-  for(const s of states){
-    const b=el("button",{class:"st","data-k":s.k,"aria-pressed":String(current===s.k),
-      onclick:()=>onPick(s.k)}, el("span",{class:"ic"},s.ic), s.lbl);
-    wrap.append(b);
-  }
-  return wrap;
+  const row=el("div",{class:"statuses"});
+  for(const s of states)if(s.k!=="nofatto")row.append(faceBtn(s,"st",current,onPick));
+  return row;
+}
+// pastiglia "Non fatto": sta nella riga della nota, a destra, e si può togliere ri-toccandola.
+// Qui l'etichetta basta: non è un punto della scala, quindi non ha una faccia.
+function skipBtn(current,onPick){
+  const s=STATES.find(x=>x.k==="nofatto");
+  return el("button",{class:"skip","data-k":s.k,"aria-pressed":String(current===s.k),
+    onclick:()=>onPick(current===s.k?null:s.k)},s.lbl);
 }
 
 function viewOggi(){
@@ -774,73 +847,84 @@ function viewOggi(){
 
   // 1 · MATTINA — come stai
   const mcard=el("div",{class:"card"});
-  mcard.append(el("div",{class:"stat"}, el("h2",{},"1 · Mattina — come stai"),
-    el("span",{class:"pill"+(morningComplete(d)?" ok":"")}, morningComplete(d)?"Fatto":"Da fare")));
-  mcard.append(el("div",{class:"sub"},"Come ti sei svegliato oggi. È il segnale del giorno-dopo, quello che muove i gate."));
-  mcard.append(el("div",{class:"secrow"},
-    el("button",{class:"btn small ok",style:"flex:1",onclick:markMorningOk},"✓ Tutto ok"),
-    el("button",{class:"btn small ghost",style:"flex:1",onclick:clearMorning},"Pulisci")));
-  for(const f of S.fronti){
-    if(!rec.morningNote)rec.morningNote={};
-    const mrow=el("div",{class:"ex"},
-      el("div",{class:"frontehdr"},
-        el("span",{class:"bar",style:`background:${f.color}`}),
-        el("h3",{class:"frname"},f.name,
-          rec.morning[f.id]?null:el("span",{class:"todo","aria-label":"da scegliere",title:"Da scegliere"}))),
-      statusSeg(MORNING_STATES, rec.morning[f.id], k=>{
-        rec.morning[f.id]=k;save();if(k==="rosso")showRedFlags(f);render();}));
-    const mkey="m_"+f.id;
-    mrow.append(el("div",{class:"extra"},
-      el("button",{class:"notebtn",onclick:()=>{noteOpen[mkey]=!noteOpen[mkey];render();}},
-        (rec.morningNote[f.id]?"✎ Nota":"+ Nota"))));
-    if(noteOpen[mkey]){
-      mrow.append(el("div",{class:"noteopen"}, el("textarea",{placeholder:"Come ti senti su questo fronte al risveglio…",
-        onchange:ev=>{rec.morningNote[f.id]=ev.target.value;save();}}, rec.morningNote[f.id]||"")));
+  mcard.append(secHeader("1 · Mattina — come stai",rec,d,"morning"));
+  if(secDone(rec,"morning")){
+    mcard.append(el("div",{class:"sub"},"Registrata. Tocca Modifica se devi correggere qualcosa."));
+    mcard.append(morningRecap(rec));
+  }else{
+    mcard.append(el("div",{class:"sub"},"Come ti sei svegliato oggi. È il segnale del giorno-dopo, quello che muove i gate."));
+    mcard.append(el("div",{class:"secrow"},
+      el("button",{class:"btn small ok",style:"flex:1",onclick:markMorningOk},"✓ Tutto ok"),
+      el("button",{class:"btn small ghost",style:"flex:1",onclick:clearMorning},"Pulisci")));
+    for(const f of S.fronti){
+      if(!rec.morningNote)rec.morningNote={};
+      const mrow=el("div",{class:"ex"},
+        el("div",{class:"frontehdr"},
+          el("span",{class:"bar",style:`background:${f.color}`}),
+          el("h3",{class:"frname"},f.name,
+            rec.morning[f.id]?null:el("span",{class:"todo","aria-label":"da scegliere",title:"Da scegliere"}))),
+        statusSeg(MORNING_STATES, rec.morning[f.id], k=>{
+          rec.morning[f.id]=k;save();if(k==="rosso")showRedFlags(f);render();}));
+      const mkey="m_"+f.id;
+      mrow.append(el("div",{class:"extra"},
+        el("button",{class:"notebtn",onclick:()=>{noteOpen[mkey]=!noteOpen[mkey];render();}},
+          (rec.morningNote[f.id]?"✎ Nota":"+ Nota"))));
+      if(noteOpen[mkey]){
+        mrow.append(el("div",{class:"noteopen"}, el("textarea",{placeholder:"Come ti senti su questo fronte al risveglio…",
+          onchange:ev=>{rec.morningNote[f.id]=ev.target.value;save();}}, rec.morningNote[f.id]||"")));
+      }
+      mcard.append(mrow);
     }
-    mcard.append(mrow);
+    mcard.append(secRegisterRow(d,"morning"));
   }
   frag.append(mcard);
 
   // 2 · ALLENAMENTO
   const isTrain=dayType(rec,d)==="train";
   const tcard=el("div",{class:"card"});
-  tcard.append(el("h2",{},"2 · Allenamento"));
-  tcard.append(el("div",{class:"sub"},"Compila dopo la seduta. Nei giorni di scarico bastano gli esercizi quotidiani."));
-  const seg=el("div",{class:"seg",style:"margin-top:12px"});
-  const mk=(k,l)=>el("button",{"aria-pressed":String(dayType(rec,d)===k),
-    onclick:()=>{rec.type=k;if(!rec.committed)syncDayItems(rec,d);save();render();}},l);
-  seg.append(mk("rest","Riposo"),mk("train","Allenamento"));
-  tcard.append(seg);
-  tcard.append(el("div",{class:"secrow"},
-    el("button",{class:"btn small ok",style:"flex:1",onclick:markTrainOk},"✓ Tutto ok"),
-    el("button",{class:"btn small ghost",style:"flex:1",onclick:clearTrain},"Pulisci")));
+  tcard.append(secHeader("2 · Allenamento",rec,d,"train"));
+  if(secDone(rec,"train")){
+    tcard.append(el("div",{class:"sub"},"Registrato. Tocca Modifica se devi correggere qualcosa."));
+    tcard.append(trainRecap(rec,d));
+  }else{
+    tcard.append(el("div",{class:"sub"},"Compila dopo la seduta. Nei giorni di scarico bastano gli esercizi quotidiani."));
+    const seg=el("div",{class:"seg",style:"margin-top:12px"});
+    const mk=(k,l)=>el("button",{"aria-pressed":String(dayType(rec,d)===k),
+      onclick:()=>{const t=setDayType(rec,d,k);render();if(t)toast("Esercizi riallineati al nuovo tipo di giornata");}},l);
+    seg.append(mk("rest","Riposo"),mk("train","Allenamento"));
+    tcard.append(seg);
+    tcard.append(el("div",{class:"secrow"},
+      el("button",{class:"btn small ok",style:"flex:1",onclick:markTrainOk},"✓ Tutto ok"),
+      el("button",{class:"btn small ghost",style:"flex:1",onclick:clearTrain},"Pulisci")));
 
-  function renderCadence(kind){ // "alt" | "daily"
-    let n=0;
-    for(const f of S.fronti){
-      const its=itemsOf(rec,f.id,kind);
-      if(!its.length)continue;
-      n++;
-      const grpUids=its.map(it=>it.uid);
-      tcard.append(el("div",{class:"frontehdr",style:"margin-top:16px"},
-        el("span",{class:"bar",style:`background:${f.color}`}), el("h3",{class:"frname"},f.name),
-        el("span",{class:"sub",style:"margin-left:auto"},rec.levels[f.id]),
-        el("button",{class:"okmini",onclick:(function(uids){return ()=>markExercisesOk(uids);})(grpUids)},"✓ Ok")));
-      for(const it of its) tcard.append(exerciseRow(rec,it));
-    }
-    return n;
+    const renderCadence=kind=>{ // "alt" | "daily"
+      let n=0;
+      for(const f of S.fronti){
+        const its=itemsOf(rec,f.id,kind);
+        if(!its.length)continue;
+        n++;
+        const grpUids=its.map(it=>it.uid);
+        tcard.append(el("div",{class:"frontehdr",style:"margin-top:16px"},
+          el("span",{class:"bar",style:`background:${f.color}`}), el("h3",{class:"frname"},f.name),
+          el("span",{class:"sub",style:"margin-left:auto"},rec.levels[f.id]),
+          el("button",{class:"okmini",onclick:(function(uids){return ()=>markExercisesOk(uids);})(grpUids)},"✓ Ok")));
+        for(const it of its) tcard.append(exerciseRow(rec,it));
+      }
+      return n;
+    };
+
+    // Giorni alterni (sopra) — vuota nei giorni di riposo
+    tcard.append(el("div",{class:"cadsec"},"Giorni alterni"));
+    if(!renderCadence("alt")) tcard.append(el("div",{class:"cadempty"},
+      isTrain?"Nessun esercizio a giorni alterni a questo livello.":"Saltiamo questa parte oggi."));
+    // Ogni giorno (sotto)
+    tcard.append(el("div",{class:"cadsec"},"Ogni giorno"));
+    if(!renderCadence("daily")) tcard.append(el("div",{class:"cadempty"},"Nessun esercizio quotidiano a questo livello."));
+
+    tcard.append(secRegisterRow(d,"train"));
+    tcard.append(el("div",{class:"sub",style:"margin-top:16px"},
+      "Serve aggiungere o correggere un esercizio solo per oggi? Aprilo dallo Storico."));
   }
-
-  // Giorni alterni (sopra) — vuota nei giorni di riposo
-  tcard.append(el("div",{class:"cadsec"},"Giorni alterni"));
-  if(!renderCadence("alt")) tcard.append(el("div",{class:"cadempty"},
-    isTrain?"Nessun esercizio a giorni alterni a questo livello.":"Saltiamo questa parte oggi."));
-  // Ogni giorno (sotto)
-  tcard.append(el("div",{class:"cadsec"},"Ogni giorno"));
-  if(!renderCadence("daily")) tcard.append(el("div",{class:"cadempty"},"Nessun esercizio quotidiano a questo livello."));
-
-  tcard.append(el("div",{class:"sub",style:"margin-top:16px"},
-    "Serve aggiungere o correggere un esercizio solo per oggi? Aprilo dallo Storico."));
 
   frag.append(tcard);
 
@@ -860,7 +944,7 @@ function exerciseRow(rec,it){
   const extra=el("div",{class:"extra"});
   const noteBtn=el("button",{class:"notebtn",onclick:()=>{noteOpen[it.uid]=!noteOpen[it.uid];render();}},
     (it.note?"✎ Nota":"+ Nota"));
-  extra.append(noteBtn);
+  extra.append(noteBtn, skipBtn(it.status,k=>{it.status=k;save();render();}));
   row.append(extra);
   if(noteOpen[it.uid]){
     row.append(el("div",{class:"noteopen"}, el("textarea",{placeholder:"Feedback su questo esercizio…",
@@ -869,15 +953,101 @@ function exerciseRow(rec,it){
   return row;
 }
 
+/* ----- recap di una sezione registrata ----- */
+function statusChip(k){
+  const s=STATES.find(x=>x.k===k);
+  if(!s)return el("span",{class:"rs","data-k":"none"},"—");
+  return el("span",{class:"rs","data-k":k}, el("span",{class:"face","aria-hidden":"true"},s.ic), s.lbl);
+}
+function morningRecap(rec){
+  const w=el("div",{class:"recap"});
+  for(const f of S.fronti){
+    const ri=el("div",{class:"ri"});
+    ri.append(el("div",{class:"rr"},
+      el("span",{class:"bar",style:`background:${f.color}`}),
+      el("span",{class:"rn"},f.name),
+      statusChip(rec.morning[f.id])));
+    const n=rec.morningNote&&rec.morningNote[f.id];
+    if(n)ri.append(el("div",{class:"rnote"},n));
+    w.append(ri);
+  }
+  return w;
+}
+function trainRecap(rec,d){
+  const w=el("div",{class:"recap"});
+  const its=rec.items||[];
+  const conta=k=>its.filter(it=>it.status===k).length;
+  const parti=STATES.filter(s=>conta(s.k)).map(s=>conta(s.k)+" "+s.lbl.toLowerCase());
+  w.append(el("div",{class:"rsum"},
+    (dayType(rec,d)==="train"?"Allenamento":"Riposo")+" · "+
+    (its.length?its.length+(its.length===1?" esercizio":" esercizi"):"nessun esercizio")+
+    (parti.length?" · "+parti.join(" · "):"")));
+  const gruppo=(label,list)=>{
+    if(!list.length)return;
+    w.append(el("div",{class:"rgrp"},label));
+    for(const it of list){
+      const ri=el("div",{class:"ri"});
+      ri.append(el("div",{class:"rr"},
+        el("span",{class:"rn"},it.name),
+        statusChip(it.status)));
+      if(it.note)ri.append(el("div",{class:"rnote"},it.note));
+      w.append(ri);
+    }
+  };
+  for(const f of S.fronti)gruppo(f.name,its.filter(it=>it.fronte===f.id));
+  gruppo("Altri",its.filter(it=>!S.fronti.some(f=>f.id===it.fronte)));
+  return w;
+}
+// intestazione comune alle due sezioni: pill di stato + eventuale "Modifica"
+function secHeader(title,rec,d,sec){
+  const done=secDone(rec,sec);
+  const miss=secMissing(d,sec);
+  const st=el("div",{class:"stat"}, el("h2",{},title),
+    done
+      ? el("button",{class:"iconbtn",onclick:()=>reopenSec(sec)},"✎ Modifica")
+      : el("span",{class:"pill"+(miss===0?" ok":"")}, miss===0?"Da registrare":"Da fare"));
+  return st;
+}
+// bottone "Registra" della sezione: full width, disabilitato finché mancano selezioni
+// (quali mancano lo dicono già i pallini accanto ai nomi)
+function secRegisterRow(d,sec){
+  const miss=secMissing(d,sec);
+  const w=el("div",{style:"margin-top:16px"});
+  const btn=el("button",{class:"btn primary",onclick:miss===0?()=>registerSec(sec):null},"Registra");
+  if(miss!==0)btn.disabled=true;
+  w.append(btn);
+  return w;
+}
+function registerSec(sec){
+  const d=todayISO();const rec=ensureDay(d);
+  if(secMissing(d,sec)!==0){toast("Completa le selezioni di questa sezione");return;}
+  if(sec==="train"&&!rec.type)rec.type=dayType(rec,d);
+  setSecDone(rec,sec,true);save();render();
+  toast(rec.committed?"Giornata registrata ✓":(sec==="morning"?"Mattina registrata ✓":"Allenamento registrato ✓"));
+}
+function reopenSec(sec){
+  const rec=ensureDay(todayISO());
+  const apri=()=>{setSecDone(rec,sec,false);save();render();};
+  // se la giornata era già definitiva, riaprire una sezione la riporta in bozza: si chiede
+  if(rec.committed)confirmSheet("Riaprire "+SEC_LABEL[sec]+"?",
+    "La giornata torna in bozza finché non registri di nuovo la sezione: nel frattempo non conta per le settimane pulite. I dati inseriti restano.",
+    "Riapri",apri);
+  else apri();
+}
+
 function defaultType(){return contextMode()==="session"?"train":"rest";}
 function dayComplete(d){const r=day(d);if(!r)return false;
   return S.fronti.every(f=>r.morning[f.id]||(r.items||[]).some(it=>it.fronte===f.id&&it.status));}
 function morningComplete(d){const r=day(d);if(!r)return false;return S.fronti.every(f=>r.morning[f.id]);}
 function levelNameOf(f,lid){const l=f.levels.find(x=>x.id===lid);return l?l.name.replace(/^L\d+ · /,""):lid;}
-function dayMissing(d){const rec=ensureDay(d);let m=0;
+function morningMissing(d){const rec=ensureDay(d);let m=0;
   for(const f of S.fronti)if(!rec.morning[f.id])m++;
+  return m;}
+function trainMissing(d){const rec=ensureDay(d);let m=0;
   for(const it of rec.items)if(!it.status)m++;
   return m;}
+function dayMissing(d){return morningMissing(d)+trainMissing(d);}
+function secMissing(d,sec){return sec==="morning"?morningMissing(d):trainMissing(d);}
 function isDayReady(d){return dayMissing(d)===0;}
 
 function markAllOk(){
@@ -907,12 +1077,15 @@ function askRegister(){
   confirmSheet("Registrare la giornata?",
     "Segni come definitiva la giornata di oggi: entrerà nel conteggio delle settimane pulite e nei grafici.",
     "Registra",()=>{const d=todayISO();const rec=ensureDay(d);if(!rec.type)rec.type=dayType(rec,d);
-      rec.committed=true;save();render();toast("Giornata registrata ✓");});
+      for(const s of SECTIONS)setSecDone(rec,s,true);
+      save();render();toast("Giornata registrata ✓");});
 }
 function askReset(){
   confirmSheet("Annullare la registrazione?",
-    "La giornata di oggi torna in bozza: non conterà per le settimane pulite finché non la registri di nuovo. I dati inseriti restano.",
-    "Reset registrazione",()=>{const rec=ensureDay(todayISO());rec.committed=false;save();render();toast("Registrazione annullata");},true);
+    "La giornata di oggi torna in bozza: le due sezioni si riaprono e non conterà per le settimane pulite finché non le registri di nuovo. I dati inseriti restano.",
+    "Reset registrazione",()=>{const rec=ensureDay(todayISO());
+      for(const s of SECTIONS)setSecDone(rec,s,false);
+      save();render();toast("Registrazione annullata");},true);
 }
 function markMorningOk(){const rec=ensureDay(todayISO());for(const f of S.fronti)rec.morning[f.id]="ok";save();render();}
 function clearMorning(){const rec=ensureDay(todayISO());rec.morning={};save();render();}
@@ -949,10 +1122,10 @@ function openLevelSheet(fid){
       const b=el("button",{class:"lvopt","aria-pressed":String(l.id===S.levels[fid]),
         onclick:()=>{S.levels[fid]=l.id;S.levelSince[fid]=todayISO();
           (S.levelLog=S.levelLog||[]).push({fronte:fid,level:l.id,date:todayISO()});
-          // la giornata di oggi, se ancora in bozza, segue il nuovo livello; i giorni
-          // già registrati restano com'erano: il passato non si riscrive da solo
+          // la giornata di oggi, se l'allenamento non è ancora registrato, segue il nuovo
+          // livello; ciò che è registrato resta com'era: il passato non si riscrive da solo
           const rec=S.days[todayISO()];
-          if(rec&&!rec.committed){rec.levels[fid]=l.id;syncDayItems(rec,todayISO());}
+          if(rec&&!secDone(rec,"train")){rec.levels[fid]=l.id;syncDayItems(rec,todayISO());}
           save();closeSheet();render();toast(f.name+" → "+l.id);}},
         el("div",{class:"n"},l.name),
         el("div",{class:"g"}, i<f.levels.length-1?`Gate: ${S.gateWeeks[fid]} sett. pulita${S.gateWeeks[fid]>1?"e":""}`:"Obiettivo finale"));
@@ -1151,17 +1324,20 @@ function openDaySheet(d){
     function syncSeg(){const t=rec.type||"rest";
       btnRest.setAttribute("aria-pressed",String(t==="rest"));
       btnTrain.setAttribute("aria-pressed",String(t==="train"));}
-    const setType=t=>{rec.type=t;if(!rec.committed)syncDayItems(rec,d);save();syncSeg();refresh();};
+    const setType=t=>{const was=setDayType(rec,d,t);syncSeg();refresh();
+      if(was)toast("Esercizi riallineati al nuovo tipo di giornata");};
     btnRest.onclick=()=>setType("rest");
     btnTrain.onclick=()=>setType("train");
     seg.append(btnRest,btnTrain);syncSeg();
     const body=el("div",{});
     s.append(el("p",{class:"sub",style:"margin:0 0 8px"},"Modifica com'è andata questa giornata."),seg,body);
 
-    function noteBlock(getV,setV,key,ph){
+    // accanto: `dopo` è la pastiglia "Non fatto" degli esercizi (la mattina non ce l'ha)
+    function noteBlock(getV,setV,key,ph,dopo){
       const wrap=el("div",{});
       wrap.append(el("div",{class:"extra",style:"margin-top:14px"},
-        el("button",{class:"notebtn",onclick:()=>{nopen[key]=!nopen[key];refresh();}}, (getV()?"✎ Nota":"+ Nota"))));
+        el("button",{class:"notebtn",onclick:()=>{nopen[key]=!nopen[key];refresh();}}, (getV()?"✎ Nota":"+ Nota")),
+        dopo||null));
       if(nopen[key]) wrap.append(el("div",{class:"noteopen"},
         el("textarea",{placeholder:ph,onchange:ev=>{setV(ev.target.value);save();}}, getV()||"")));
       return wrap;
@@ -1254,7 +1430,8 @@ function openDaySheet(d){
         w.append(el("div",{class:"sub"},"Vale solo per questa giornata: il catalogo in Impostazioni non cambia."));
       }
       w.append(statusSeg(STATES,it.status,k=>{it.status=k;save();refresh();}));
-      w.append(noteBlock(()=>it.note,v=>it.note=v,"n_"+it.uid,"Feedback su questo esercizio…"));
+      w.append(noteBlock(()=>it.note,v=>it.note=v,"n_"+it.uid,"Feedback su questo esercizio…",
+        skipBtn(it.status,k=>{it.status=k;save();refresh();})));
       return w;
     }
 
@@ -1298,7 +1475,9 @@ function openDaySheet(d){
     sheet.append(el("div",{class:"sheetfoot"},
       el("button",{class:"btn ghost small",onclick:()=>confirmSheet("Cancellare questa giornata?","I dati inseriti per questo giorno verranno rimossi.","Elimina",()=>{
         S.days[d]={deleted:true};save();closeSheet();render();},true)},"Elimina"),
-      el("button",{class:"btn primary small",onclick:()=>{rec.committed=true;save();closeSheet();render();toast("Giornata aggiornata ✓");}},"Salva")));
+      el("button",{class:"btn primary small",onclick:()=>{
+        for(const sec of SECTIONS)setSecDone(rec,sec,true); // dallo storico si salva la giornata intera
+        save();closeSheet();render();toast("Giornata aggiornata ✓");}},"Salva")));
   });
 }
 
