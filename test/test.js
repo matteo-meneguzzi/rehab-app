@@ -61,22 +61,19 @@ rec.type="train"; M.syncDayItems(rec,oggi);
 ok(rec.items.every(x=>x.uid),"items creati con uid");
 ok(!rec.items.some(x=>x.exId==="e_wrist"),"wrist curl (ora L5) NON è nella bozza: livello avambraccio L1");
 ok(rec.items.some(x=>x.exId==="e_pushup")===false||S.levels.pettorale==="L4","push-up presente col pettorale a L4: "+rec.items.some(x=>x.exId==="e_pushup"));
-const nAlt=M.itemsOf(rec,null,"alt").length;
-const nDaily=M.itemsOf(rec,null,"daily").length;
 const nTot=rec.items.length;
 rec.type="rest"; M.syncDayItems(rec,oggi);
-ok(rec.items.length===0,
-  `di riposo non resta nessun esercizio, quotidiani compresi (erano ${nAlt} alterni + ${nDaily} ogni giorno)`);
+ok(rec.items.length===0,`di riposo non resta nessun esercizio (erano ${nTot})`);
 rec.type="train"; M.syncDayItems(rec,oggi);
 ok(rec.items.length===nTot,"tornando ad allenamento tornano tutti");
 
 console.log("\n— LA SYNC NON CANCELLA CIÒ CHE HA DATI —");
-const vittima=rec.items.find(x=>x.cad!=="daily");
+const vittima=rec.items[0];
 vittima.status="lieve";
 rec.type="rest"; M.syncDayItems(rec,oggi);
 ok(rec.items.some(x=>x.uid===vittima.uid),"un esercizio con feedback sopravvive al passaggio a riposo");
 const manuale={uid:"i_test",exId:null,fronte:"pubalgia",name:"Camminata",dose:"20 min",
-  cad:"daily",status:null,note:"",load:null,manual:true};
+  status:null,note:"",load:null,manual:true};
 rec.items.push(manuale); M.syncDayItems(rec,oggi);
 ok(rec.items.some(x=>x.uid==="i_test"),"un esercizio aggiunto a mano sopravvive alla sync");
 
@@ -84,15 +81,15 @@ console.log("\n— CAMBIO TIPO A MANO: RIALLINEA ANCHE SE REGISTRATA —");
 const dReg="2026-07-20";
 const recReg=M.ensureDay(dReg);
 recReg.type="rest"; M.syncDayItems(recReg,dReg); recReg.committed=true;
-ok(M.itemsOf(recReg,null,"alt").length===0,"la giornata registrata di riposo non ha alt");
+ok(recReg.items.length===0,"la giornata registrata di riposo non ha esercizi");
 const toccata=M.setDayType(recReg,dReg,"train");
-ok(M.itemsOf(recReg,null,"alt").length>0,"passando ad allenamento gli alt compaiono anche da registrata");
+ok(recReg.items.length>0,"passando ad allenamento compaiono anche su una giornata registrata");
 ok(toccata===true,"il cambio segnala che ha toccato una giornata registrata");
-const conFeedback=recReg.items.find(x=>x.cad!=="daily");
+const conFeedback=recReg.items[0];
 conFeedback.status="ok";
 M.setDayType(recReg,dReg,"rest");
-ok(M.itemsOf(recReg,null,"alt").length===1&&recReg.items.some(x=>x.uid===conFeedback.uid),
-  "tornando a riposo restano solo gli alt con feedback");
+ok(recReg.items.length===1&&recReg.items[0].uid===conFeedback.uid,
+  "tornando a riposo resta solo quello col feedback");
 ok(M.setDayType(recReg,dReg,"rest")===false,"ri-premere lo stesso tipo non è un cambio");
 
 console.log("\n— REGISTRAZIONE PER SEZIONE —");
@@ -122,6 +119,22 @@ S.exercises.pop();
 console.log("\n— MIGRAZIONE: SEZIONI DELLE GIORNATE GIÀ REGISTRATE —");
 ok(M.secDone(S.days["2026-07-24"],"morning")&&M.secDone(S.days["2026-07-24"],"train"),
   "una giornata registrata prima di questa versione ha entrambe le sezioni chiuse");
+
+console.log("\n— CONSIGLI: FUORI DAL PIANO —");
+const dCons="2026-07-16";
+const recCons=M.ensureDay(dCons);
+M.setDayType(recCons,dCons,"train");
+const grip=S.exercises.find(e=>e.id==="e_grip");
+ok(!!grip,"il grip isometrico è in catalogo");
+grip.sempre=true;
+M.syncDayItems(recCons,dCons);
+ok(!recCons.items.some(x=>x.exId==="e_grip"),
+  "un esercizio marcato consiglio non entra nella giornata");
+const nSenza=recCons.items.length;
+grip.sempre=false;
+M.syncDayItems(recCons,dCons);
+ok(recCons.items.length===nSenza+1,"togliendo il flag torna nel piano");
+delete grip.sempre; // il catalogo torna com'era: i test che seguono lo danno per pieno
 
 console.log("\n— CONTEGGI E STATO —");
 const st=M.fronteDayStatus("2026-07-25","pettorale");

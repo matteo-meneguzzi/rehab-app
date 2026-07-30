@@ -147,8 +147,6 @@
   .ex .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
   .ex .name{font-weight:600;font-size:15.5px}
   .ex .dose{color:var(--ink-3);font-size:13px;margin-top:1px}
-  .ex .cad{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;color:var(--ink-3);
-    border:1px solid var(--border);border-radius:6px;padding:2px 6px;white-space:nowrap}
   .cadsec{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--ink-3);
     margin-top:20px;padding-top:14px;border-top:1px solid var(--border)}
   .cadempty{color:var(--ink-3);font-size:13px;padding:12px 2px 2px}
@@ -164,6 +162,18 @@
 
   .frontehdr{display:flex;align-items:center;gap:8px}
   .frontehdr .bar{width:4px;height:18px;border-radius:3px}
+
+  /* consigli di un fronte: chiusi di default, fuori dal piano */
+  .consigli{margin-top:10px;border:1px dashed var(--border);border-radius:11px;
+    background:color-mix(in srgb,var(--accent-weak) 45%,var(--surface));padding:2px 12px}
+  .constoggle{display:flex;align-items:center;gap:8px;width:100%;background:transparent;border:0;
+    padding:10px 0;font-size:12.5px;font-weight:700;color:var(--ink-2);text-align:left}
+  .constoggle .n{font-size:11px;font-weight:700;color:var(--ink-3);border:1px solid var(--border);
+    border-radius:20px;padding:1px 8px;background:var(--surface)}
+  .constoggle .chev{margin-left:auto;font-size:10px;color:var(--ink-3)}
+  .consiglio{padding:8px 0;border-top:1px solid var(--border)}
+  .consiglio .cn{font-size:13.5px;line-height:1.45}
+  .consiglio .cd{font-size:12.5px;color:var(--ink-3);margin-top:1px}
 
   /* recap di una sezione registrata: sola lettura, compatto */
   .recap{margin-top:12px}
@@ -241,6 +251,10 @@
     color:var(--ink-2);text-transform:uppercase;letter-spacing:.04em;padding:6px 0}
   .lvghdr .cur{text-transform:none;letter-spacing:0;font-weight:600;color:var(--accent)}
   .lvgempty{font-size:12px;color:var(--ink-3);font-style:italic;padding:4px 0 8px}
+  /* i consigli non si trascinano, quindi niente padding del .lvgroup: il pulsante resta
+     allineato a "+ Esercizio". Il contenuto però rientra come quello dei gruppi di livello. */
+  .consgroup{margin-top:8px;padding-top:2px}
+  .consgroup .lvghdr,.consgroup .lvgempty,.consgroup .exadmin{padding-left:8px}
   .grip{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
     color:var(--ink-3);font-size:16px;padding:6px 4px;line-height:1}
   .er.dragging{opacity:.35}
@@ -316,10 +330,11 @@
     .st{padding:12px 2px}
     .st .face{font-size:25px}
     .skip{width:calc((100% - 18px) / 4)}
-    .cad{font-size:9.5px;padding:2px 5px}
     .lvchip{padding:9px 7px}
     .lvchip .lv{font-size:16px}
     .lvchip .fr{font-size:10px}
+    .tab{font-size:10px;padding:6px 1px}
+    .tab .ic{font-size:17px}
     .btn{font-size:14px;padding:11px 9px}
     .btn.small{font-size:12px;padding:8px 9px}
     .seg button{font-size:12.5px;padding:9px 3px}
@@ -346,6 +361,7 @@
     <button class="tab" data-tab="oggi" aria-selected="true"><span class="ic">◎</span>Oggi</button>
     <button class="tab" data-tab="progressi" aria-selected="false"><span class="ic">▤</span>Progressi</button>
     <button class="tab" data-tab="storico" aria-selected="false"><span class="ic">☰</span>Storico</button>
+    <button class="tab" data-tab="esercizi" aria-selected="false"><span class="ic">▣</span>Esercizi</button>
     <button class="tab" data-tab="impostazioni" aria-selected="false"><span class="ic">⚙</span>Setup</button>
   </div>
 </nav>
@@ -450,40 +466,40 @@ function seed(){
     // tocca le giornate già registrate.
     exercises:[
       // ---- avambraccio ----
-      {id:"e_grip",fronte:"avambraccio",name:"Grip isometrico",cad:"daily",dose:"4×30–45s @50–60% · mattina, prima del PC",minLevel:"L0",load:{label:"%",unit:"%"}},
-      {id:"e_mills",fronte:"avambraccio",name:"Mill's (stretch gentile)",cad:"daily",dose:"2×30s · dopo gli esercizi e a fine giornata",minLevel:"L0",load:null},
-      {id:"e_wrist",fronte:"avambraccio",name:"Wrist curl eccentrico",cad:"alt",dose:"3×12 · 2–4 kg · 1s su / 4s giù",minLevel:"L1",load:{label:"Peso",unit:"kg"}},
-      {id:"e_hammer",fronte:"avambraccio",name:"Rotazioni martello",cad:"alt",dose:"3×10 · presa a metà manico",minLevel:"L1",load:null},
-      {id:"e_chinup",fronte:"avambraccio",name:"Trazioni assistite presa supina",cad:"alt",dose:"metà del volume di partenza · la supina scarica il brachioradiale",minLevel:"L3",load:null},
-      {id:"e_row",fronte:"avambraccio",name:"Rematore leggero / farmer carry leggeri",cad:"alt",dose:"presa neutra → prona per ultima",minLevel:"L4",load:{label:"Peso",unit:"kg"}},
+      {id:"e_grip",fronte:"avambraccio",name:"Grip isometrico",dose:"4×30–45s @50–60% · mattina, prima del PC",minLevel:"L0",load:{label:"%",unit:"%"},sempre:true},
+      {id:"e_mills",fronte:"avambraccio",name:"Mill's (stretch gentile)",dose:"2×30s · dopo gli esercizi e a fine giornata",minLevel:"L0",load:null,sempre:true},
+      {id:"e_wrist",fronte:"avambraccio",name:"Wrist curl eccentrico",dose:"3×12 · 2–4 kg · 1s su / 4s giù",minLevel:"L1",load:{label:"Peso",unit:"kg"}},
+      {id:"e_hammer",fronte:"avambraccio",name:"Rotazioni martello",dose:"3×10 · presa a metà manico",minLevel:"L1",load:null},
+      {id:"e_chinup",fronte:"avambraccio",name:"Trazioni assistite presa supina",dose:"metà del volume di partenza · la supina scarica il brachioradiale",minLevel:"L3",load:null},
+      {id:"e_row",fronte:"avambraccio",name:"Rematore leggero / farmer carry leggeri",dose:"presa neutra → prona per ultima",minLevel:"L4",load:{label:"Peso",unit:"kg"}},
       // ---- pettorale ----
-      {id:"e_mob",fronte:"pettorale",name:"Mobilità spalla (5 mov.)",cad:"daily",dose:"8–10 rip cad. · range indolore",minLevel:"L0",load:null},
-      {id:"e_isopett",fronte:"pettorale",name:"Isometrico adduzione",cad:"daily",dose:"4×20–30s a intensità crescente, indolore",minLevel:"L1",load:null},
-      {id:"e_pushwall",fronte:"pettorale",name:"Push-up al muro / inclinato",cad:"alt",dose:"polso neutro (pugni/maniglie), a buffer",minLevel:"L2",load:null},
-      {id:"e_pushup",fronte:"pettorale",name:"Push-up (polso neutro, a buffer)",cad:"alt",dose:"volume dimezzato · ginocchia→normale · su pugni/maniglie",minLevel:"L3",load:null},
-      {id:"e_add_band",fronte:"pettorale",name:"Adduzione orizzontale con elastico",cad:"alt",dose:"3×10–12 per lato · mirato all'inserzione, non carica il polso",minLevel:"L3",load:null},
-      {id:"e_croci",fronte:"pettorale",name:"Croci leggere (elastico/manubri)",cad:"alt",dose:"3×12 · chiusura controllata a fine corsa",minLevel:"L3",load:null},
+      {id:"e_mob",fronte:"pettorale",name:"Mobilità spalla (5 mov.)",dose:"8–10 rip cad. · range indolore",minLevel:"L0",load:null},
+      {id:"e_isopett",fronte:"pettorale",name:"Isometrico adduzione",dose:"4×20–30s a intensità crescente, indolore",minLevel:"L1",load:null},
+      {id:"e_pushwall",fronte:"pettorale",name:"Push-up al muro / inclinato",dose:"polso neutro (pugni/maniglie), a buffer",minLevel:"L2",load:null},
+      {id:"e_pushup",fronte:"pettorale",name:"Push-up (polso neutro, a buffer)",dose:"volume dimezzato · ginocchia→normale · su pugni/maniglie",minLevel:"L3",load:null},
+      {id:"e_add_band",fronte:"pettorale",name:"Adduzione orizzontale con elastico",dose:"3×10–12 per lato · mirato all'inserzione, non carica il polso",minLevel:"L3",load:null},
+      {id:"e_croci",fronte:"pettorale",name:"Croci leggere (elastico/manubri)",dose:"3×12 · chiusura controllata a fine corsa",minLevel:"L3",load:null},
       // ---- pubalgia ----
-      {id:"e_sque",fronte:"pubalgia",name:"Squeeze isometrico gambe distese",cad:"daily",dose:"3×30s @50% · esercizio-chiave · verdetto = giorno dopo",minLevel:"L0",load:null},
-      {id:"e_bridge",fronte:"pubalgia",name:"Bridge glutei (piedi uniti, ginocchia aperte)",cad:"daily",dose:"3×30s",minLevel:"L0",load:null},
-      {id:"e_birddog",fronte:"pubalgia",name:"Bird dog solo-gambe (braccia a terra)",cad:"daily",dose:"alterna gamba, controllato",minLevel:"L0",load:null},
-      {id:"e_deadbug",fronte:"pubalgia",name:"Dead bug (anti-estensione)",cad:"daily",dose:"tempi brevi, mai a cedimento",minLevel:"L0",load:null},
-      {id:"e_crunch",fronte:"pubalgia",name:"Plank-crunch gambe sollevate",cad:"daily",dose:"⚠️ carica basso addome/pube: dose minima, primo da togliere se riaccende",minLevel:"L0",load:null},
-      {id:"e_resp",fronte:"pubalgia",name:"Respiro + trasverso",cad:"daily",dose:"8–10",minLevel:"L0",load:null},
-      {id:"e_knee",fronte:"pubalgia",name:"Ginocchio al petto alternato",cad:"daily",dose:"8–10 per gamba · mobilità dolce",minLevel:"L0",load:null},
-      {id:"e_add",fronte:"pubalgia",name:"Side-lying hip adduction",cad:"daily",dose:"2×10–12 per lato",minLevel:"L0",load:null},
-      {id:"e_fly",fronte:"pubalgia",name:"Butterfly al muro",cad:"daily",dose:"3×20–30s",minLevel:"L0",load:null},
-      {id:"e_plank",fronte:"pubalgia",name:"Plank dalle ginocchia",cad:"alt",dose:"tempi brevi, mai a cedimento",minLevel:"L2",load:null},
-      {id:"e_copen",fronte:"pubalgia",name:"Copenhagen plank facilitato",cad:"alt",dose:"gamba su panca a metà coscia · 5–10s · pochissime rip",minLevel:"L3",load:null},
-      {id:"e_squat",fronte:"pubalgia",name:"Squat (buca controllata, senza pausa)",cad:"alt",dose:"cura il bracing prima di scendere",minLevel:"L4",load:{label:"Peso",unit:"kg"}},
+      {id:"e_sque",fronte:"pubalgia",name:"Squeeze isometrico gambe distese",dose:"3×30s @50% · esercizio-chiave · verdetto = giorno dopo",minLevel:"L0",load:null},
+      {id:"e_bridge",fronte:"pubalgia",name:"Bridge glutei (piedi uniti, ginocchia aperte)",dose:"3×30s",minLevel:"L0",load:null},
+      {id:"e_birddog",fronte:"pubalgia",name:"Bird dog solo-gambe (braccia a terra)",dose:"alterna gamba, controllato",minLevel:"L0",load:null},
+      {id:"e_deadbug",fronte:"pubalgia",name:"Dead bug (anti-estensione)",dose:"tempi brevi, mai a cedimento",minLevel:"L0",load:null},
+      {id:"e_crunch",fronte:"pubalgia",name:"Plank-crunch gambe sollevate",dose:"⚠️ carica basso addome/pube: dose minima, primo da togliere se riaccende",minLevel:"L0",load:null},
+      {id:"e_resp",fronte:"pubalgia",name:"Respiro + trasverso",dose:"8–10",minLevel:"L0",load:null},
+      {id:"e_knee",fronte:"pubalgia",name:"Ginocchio al petto alternato",dose:"8–10 per gamba · mobilità dolce",minLevel:"L0",load:null},
+      {id:"e_add",fronte:"pubalgia",name:"Side-lying hip adduction",dose:"2×10–12 per lato",minLevel:"L0",load:null},
+      {id:"e_fly",fronte:"pubalgia",name:"Butterfly al muro",dose:"3×20–30s",minLevel:"L0",load:null},
+      {id:"e_plank",fronte:"pubalgia",name:"Plank dalle ginocchia",dose:"tempi brevi, mai a cedimento",minLevel:"L2",load:null},
+      {id:"e_copen",fronte:"pubalgia",name:"Copenhagen plank facilitato",dose:"gamba su panca a metà coscia · 5–10s · pochissime rip",minLevel:"L3",load:null},
+      {id:"e_squat",fronte:"pubalgia",name:"Squat (buca controllata, senza pausa)",dose:"cura il bracing prima di scendere",minLevel:"L4",load:{label:"Peso",unit:"kg"}},
     ],
     // iso -> {type:'train'|'rest', committed, done:{morning,train}, levels:{fronte:levelId}, morning:{fronte:state},
     //         morningNote:{fronte:testo}, items:[…]}
     // done = quali delle due sezioni di "Oggi" hai già registrato: una sezione registrata si
     // mostra come recap in sola lettura. committed (giornata definitiva) = done su entrambe.
     // Ogni giornata è AUTOSUFFICIENTE: si porta dentro il livello di ogni fronte e la lista
-    // degli esercizi com'erano quel giorno (nome, dose, cadenza) più il feedback.
-    // item: {uid, exId, fronte, name, dose, cad, status, note, load, manual}
+    // degli esercizi com'erano quel giorno (nome e dose) più il feedback.
+    // item: {uid, exId, fronte, name, dose, status, note, load, manual}
     //   exId  = riferimento debole al catalogo, serve solo a seguire l'esercizio nei grafici
     //   manual= aggiunto/modificato a mano su quella giornata: la sync col catalogo non lo tocca
     days:{},
@@ -533,9 +549,11 @@ function migrateToItems(p){
       if(e.fronte!==f.id)continue;
       const old=(rec.ex&&rec.ex[e.id])||null;
       const hasData=!!(old&&(old.status||old.note));
+      // e.cad esiste solo nel catalogo v1: lì la cadenza contava ancora, e ricostruire
+      // una giornata vecchia va fatto con le regole di allora. Nel modello nuovo non c'è più.
       const inLevel=li(f.id,e.minLevel)<=li(f.id,lv[f.id]) && (isTrain||e.cad==="daily");
       if(!hasData&&!inLevel)continue; // quel giorno quell'esercizio non c'era e non è stato toccato
-      items.push({uid:newUid(),exId:e.id,fronte:f.id,name:e.name,dose:e.dose,cad:e.cad,
+      items.push({uid:newUid(),exId:e.id,fronte:f.id,name:e.name,dose:e.dose,
         status:(old&&old.status)||null,note:(old&&old.note)||"",load:(old&&old.load)||null,
         manual:!inLevel});
     }
@@ -546,7 +564,7 @@ function migrateToItems(p){
       if(!old||(!old.status&&!old.note))continue;
       if(items.some(it=>it.exId===id))continue;
       items.push({uid:newUid(),exId:id,fronte:null,name:"Esercizio rimosso ("+id+")",dose:"",
-        cad:"daily",status:old.status||null,note:old.note||"",load:old.load||null,manual:true});
+        status:old.status||null,note:old.note||"",load:old.load||null,manual:true});
     }
     rec.items=items;
     delete rec.ex; // niente più doppia fonte di verità: gli items SONO la giornata
@@ -619,12 +637,11 @@ function dayType(rec,d){return rec.type||(d===todayISO()?defaultType():"rest");}
 
 /* ---- items: la lista esercizi CONGELATA dentro la giornata ---- */
 // fid null = tutti i fronti
-function itemsOf(rec,fid,cadKind){
-  return (rec.items||[]).filter(it=>(fid==null||it.fronte===fid) &&
-    (cadKind==="daily"?it.cad==="daily":it.cad!=="daily"));}
+function itemsOf(rec,fid){
+  return (rec.items||[]).filter(it=>fid==null||it.fronte===fid);}
 const SELSTYLE="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:7px 8px;color:var(--ink)";
 function itemFromCatalog(e){
-  return {uid:newUid(),exId:e.id,fronte:e.fronte,name:e.name,dose:e.dose,cad:e.cad,
+  return {uid:newUid(),exId:e.id,fronte:e.fronte,name:e.name,dose:e.dose,
     status:null,note:"",load:null,manual:false};}
 function sortItems(rec){
   const fi=id=>S.fronti.findIndex(f=>f.id===id);
@@ -635,9 +652,11 @@ function sortItems(rec){
 // Automatica solo sulle bozze; su una giornata registrata va chiesta esplicitamente.
 function syncDayItems(rec,d){
   if(!Array.isArray(rec.items))rec.items=[];
-  // Nei giorni di riposo non si fa nulla: nemmeno gli esercizi "ogni giorno".
+  // Nei giorni di riposo non si fa nulla. E i consigli (e.sempre) non sono piano di
+  // allenamento: non entrano mai nella giornata, quindi non si registrano e non contano
+  // per gate e grafici.
   const isTrain=dayType(rec,d)==="train";
-  const pertinente=e=>isTrain &&
+  const pertinente=e=>isTrain && !e.sempre &&
     lvIndex(e.fronte,e.minLevel)<=lvIndex(e.fronte,rec.levels[e.fronte]);
   rec.items=rec.items.filter(it=>{
     if(it.manual||it.status||it.note)return true;
@@ -737,6 +756,7 @@ function contextMode(){const h=new Date().getHours();return h<15?"morning":"sess
 /* ---------- rendering ---------- */
 let TAB="oggi";
 let noteOpen={}; // exId -> bool (transient)
+let consOpen={}; // fronte -> bool: i consigli nascono chiusi a ogni apertura dell'app
 
 function setHeader(){
   const mode=contextMode();
@@ -792,6 +812,7 @@ function render(){
   if(TAB==="oggi")v.append(viewOggi());
   else if(TAB==="progressi")v.append(viewProgressi());
   else if(TAB==="storico")v.append(viewStorico());
+  else if(TAB==="esercizi")v.append(viewEsercizi());
   else v.append(viewSetup());
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.tab===TAB));
   updateStickybar();
@@ -901,11 +922,16 @@ function viewOggi(){
       el("button",{class:"btn small ok",style:"flex:1",onclick:markTrainOk},"✓ Tutto ok"),
       el("button",{class:"btn small ghost",style:"flex:1",onclick:clearTrain},"Pulisci")));
 
-    const renderCadence=kind=>{ // "alt" | "daily"
+    const renderEsercizi=()=>{
       let n=0;
       for(const f of S.fronti){
-        const its=itemsOf(rec,f.id,kind);
-        if(!its.length)continue;
+        const its=itemsOf(rec,f.id);
+        if(!its.length){ // niente da allenare: restano comunque i consigli del fronte
+          const c=consigliBlock(f);
+          if(c){tcard.append(el("div",{class:"frontehdr",style:"margin-top:16px"},
+            el("span",{class:"bar",style:`background:${f.color}`}), el("h3",{class:"frname"},f.name)),c);}
+          continue;
+        }
         n++;
         const grpUids=its.map(it=>it.uid);
         tcard.append(el("div",{class:"frontehdr",style:"margin-top:16px"},
@@ -913,22 +939,17 @@ function viewOggi(){
           el("span",{class:"sub",style:"margin-left:auto"},rec.levels[f.id]),
           el("button",{class:"okmini",onclick:(function(uids){return ()=>markExercisesOk(uids);})(grpUids)},"✓ Ok")));
         for(const it of its) tcard.append(exerciseRow(rec,it));
+        const c=consigliBlock(f);
+        if(c)tcard.append(c);
       }
       return n;
     };
 
-    // Un giorno di riposo è vuoto per definizione: niente sezioni, una riga sola.
-    // Restano visibili solo gli esercizi che portano dati o aggiunti a mano.
-    if(!isTrain && !(rec.items||[]).length){
-      tcard.append(el("div",{class:"cadempty"},"Giornata di riposo: nessun esercizio."));
-    }else{
-      tcard.append(el("div",{class:"cadsec"},"Giorni alterni"));
-      if(!renderCadence("alt")) tcard.append(el("div",{class:"cadempty"},
-        isTrain?"Nessun esercizio a giorni alterni a questo livello.":"Saltiamo questa parte oggi."));
-      tcard.append(el("div",{class:"cadsec"},"Ogni giorno"));
-      if(!renderCadence("daily")) tcard.append(el("div",{class:"cadempty"},
-        isTrain?"Nessun esercizio quotidiano a questo livello.":"Saltiamo questa parte oggi."));
-    }
+    // Gli esercizi si fanno tutti negli stessi giorni: una lista sola, per fronte.
+    // Se non c'è niente da allenare lo si dice subito, prima dei consigli.
+    if(!S.fronti.some(f=>itemsOf(rec,f.id).length)) tcard.append(el("div",{class:"cadempty"},
+      isTrain?"Nessun esercizio previsto a questo livello.":"Giornata di riposo: nessun esercizio."));
+    renderEsercizi();
 
     tcard.append(secRegisterRow(d,"train"));
     tcard.append(el("div",{class:"sub",style:"margin-top:16px"},
@@ -960,6 +981,27 @@ function exerciseRow(rec,it){
       onchange:ev=>{it.note=ev.target.value;save();}}, it.note||"")));
   }
   return row;
+}
+
+/* ----- consigli: esercizi sempre validi, fuori dal piano -----
+   Non sono una progressione: valgono a ogni livello, non si registrano e non hanno
+   feedback. Stanno accanto al loro fronte, chiusi finché non li apri. */
+function consigliDi(fid){return S.exercises.filter(e=>e.sempre && e.fronte===fid);}
+function consigliBlock(f){
+  const cs=consigliDi(f.id);
+  if(!cs.length)return null;
+  const aperto=!!consOpen[f.id];
+  const w=el("div",{class:"consigli"});
+  w.append(el("button",{class:"constoggle","aria-expanded":String(aperto),
+    onclick:()=>{consOpen[f.id]=!aperto;render();}},
+    el("span",{},"💡 Consigli"),
+    el("span",{class:"n"},String(cs.length)),
+    el("span",{class:"chev"},aperto?"▲":"▼")));
+  if(aperto)for(const e of cs)
+    w.append(el("div",{class:"consiglio"},
+      el("div",{class:"cn"},e.name),
+      e.dose?el("div",{class:"cd"},e.dose):null));
+  return w;
 }
 
 /* ----- recap di una sezione registrata ----- */
@@ -1025,6 +1067,32 @@ function secRegisterRow(d,sec){
   const btn=el("button",{class:"btn primary",onclick:miss===0?()=>registerSec(sec):null},"Registra");
   if(miss!==0)btn.disabled=true;
   w.append(btn);
+  return w;
+}
+// Registrazione di una sezione dentro lo sheet dello Storico: stessa scelta della tab
+// Oggi (mattina e allenamento separati), ma qui la sezione resta sempre modificabile —
+// lo sheet è il posto in cui si va apposta a correggere.
+function secSheetRow(rec,d,sec,dopo){
+  const nome=sec==="morning"?"Mattina registrata":"Allenamento registrato";
+  const w=el("div",{class:"secrow",style:"align-items:center;margin-top:16px"});
+  if(secDone(rec,sec)){
+    w.append(el("span",{class:"pill ok"},"✓ "+nome),
+      el("button",{class:"btn ghost small",style:"width:auto;margin-left:auto",
+        onclick:()=>{setSecDone(rec,sec,false);save();dopo();
+          toast("Sezione riaperta: la giornata torna in bozza");}},"✎ Modifica"));
+  }else{
+    const miss=secMissing(d,sec);
+    const btn=el("button",{class:"btn primary small",style:"width:auto",
+      onclick:miss?null:()=>{
+        if(sec==="train"&&!rec.type)rec.type=dayType(rec,d);
+        setSecDone(rec,sec,true);save();dopo();
+        toast(rec.committed?"Giornata registrata ✓":nome+" ✓");}},
+      "Registra "+(sec==="morning"?"la mattina":"l'allenamento"));
+    if(miss)btn.disabled=true;
+    w.append(btn);
+    if(miss)w.append(el("div",{class:"docknote",style:"flex:1"},
+      `${miss===1?"Manca":"Mancano"} ${miss} selezion${miss===1?"e":"i"}`));
+  }
   return w;
 }
 function registerSec(sec){
@@ -1354,15 +1422,27 @@ function openDaySheet(d){
     function refresh(){
       body.innerHTML="";
       const isTrain=dayType(rec,d)==="train";
-      // Mattina
+      // Mattina — registrata si chiude nel recap, come nella tab Oggi
       body.append(el("div",{class:"cadsec"},"Mattina"));
-      body.append(el("button",{class:"btn small ok",style:"width:auto;margin-top:10px",
-        onclick:()=>{for(const f of S.fronti)rec.morning[f.id]="ok";save();refresh();}},"✓ Tutto ok"));
-      for(const f of S.fronti){
-        body.append(el("div",{class:"frontehdr",style:"margin-top:14px"},
-          el("span",{class:"bar",style:`background:${f.color}`}), el("h3",{class:"frname"},f.name)));
-        body.append(statusSeg(MORNING_STATES,rec.morning[f.id],k=>{rec.morning[f.id]=k;save();refresh();}));
-        body.append(noteBlock(()=>rec.morningNote[f.id],v=>rec.morningNote[f.id]=v,"m_"+f.id,"Come ti senti su questo fronte al risveglio…"));
+      if(secDone(rec,"morning")){
+        body.append(morningRecap(rec));
+      }else{
+        body.append(el("button",{class:"btn small ok",style:"width:auto;margin-top:10px",
+          onclick:()=>{for(const f of S.fronti)rec.morning[f.id]="ok";save();refresh();}},"✓ Tutto ok"));
+        for(const f of S.fronti){
+          body.append(el("div",{class:"frontehdr",style:"margin-top:14px"},
+            el("span",{class:"bar",style:`background:${f.color}`}), el("h3",{class:"frname"},f.name)));
+          body.append(statusSeg(MORNING_STATES,rec.morning[f.id],k=>{rec.morning[f.id]=k;save();refresh();}));
+          body.append(noteBlock(()=>rec.morningNote[f.id],v=>rec.morningNote[f.id]=v,"m_"+f.id,"Come ti senti su questo fronte al risveglio…"));
+        }
+      }
+      body.append(secSheetRow(rec,d,"morning",refresh));
+      // Allenamento registrato: anche qui recap, e si riapre col pulsante Modifica
+      if(secDone(rec,"train")){
+        body.append(el("div",{class:"cadsec"},"Allenamento"));
+        body.append(trainRecap(rec,d));
+        body.append(secSheetRow(rec,d,"train",refresh));
+        return;
       }
       // In una giornata di riposo non c'è allenamento: niente livelli, niente esercizi.
       // Restano visibili se quel giorno ha comunque degli esercizi (feedback o aggiunti
@@ -1370,6 +1450,7 @@ function openDaySheet(d){
       if(!isTrain && !(rec.items||[]).length){
         body.append(el("div",{class:"cadsec"},"Allenamento"));
         body.append(el("div",{class:"cadempty"},"Giornata di riposo: nessun esercizio."));
+        body.append(secSheetRow(rec,d,"train",refresh));
         return;
       }
       // Livelli DI QUESTA GIORNATA: salvati nel record, non dedotti
@@ -1389,27 +1470,25 @@ function openDaySheet(d){
         "Quelli con un feedback o aggiunti a mano restano dove sono."));
 
       // Esercizi della giornata: si modificano qui, il catalogo non c'entra più
-      const renderCad=(kind,label)=>{
-        body.append(el("div",{class:"cadsec"},label));
-        // di riposo vale per entrambe le cadenze: quel giorno non era previsto nulla
-        if(!isTrain && !itemsOf(rec,null,kind).length)
+      const renderEsercizi=()=>{
+        body.append(el("div",{class:"cadsec"},"Esercizi"));
+        if(!isTrain && !(rec.items||[]).length)
           body.append(el("div",{class:"cadempty"},"Giornata di riposo."));
         for(const f of S.fronti){
-          const its=itemsOf(rec,f.id,kind);
+          const its=itemsOf(rec,f.id);
           const hdr=el("div",{class:"frontehdr",style:"margin-top:14px"},
             el("span",{class:"bar",style:`background:${f.color}`}), el("h3",{class:"frname"},f.name));
           if(its.length)hdr.append(el("button",{class:"okmini",style:"margin-left:auto",
             onclick:()=>{for(const it of its)it.status="ok";save();refresh();}},"✓ Ok"));
           body.append(hdr);
           for(const it of its)body.append(itemBlock(it));
-          const akey="add_"+kind+"_"+f.id;
+          const akey="add_"+f.id;
           body.append(el("div",{class:"extra"}, el("button",{class:"notebtn",
             onclick:()=>{nopen[akey]=!nopen[akey];refresh();}}, nopen[akey]?"× Annulla":"+ Esercizio")));
-          if(nopen[akey])body.append(addItemForm(f,kind,akey));
+          if(nopen[akey])body.append(addItemForm(f,akey));
         }
       };
-      renderCad("alt","Giorni alterni");
-      renderCad("daily","Ogni giorno");
+      renderEsercizi();
 
       // esercizi che quel giorno risultano fatti ma non appartengono a nessun fronte noto
       const orfani=(rec.items||[]).filter(it=>!S.fronti.some(f=>f.id===it.fronte));
@@ -1427,6 +1506,7 @@ function openDaySheet(d){
           body.append(sel);
         }
       }
+      body.append(secSheetRow(rec,d,"train",refresh));
     }
 
     function itemBlock(it){
@@ -1453,9 +1533,8 @@ function openDaySheet(d){
       return w;
     }
 
-    function addItemForm(f,kind,akey){
-      const cand=S.exercises.filter(e=>e.fronte===f.id &&
-        (kind==="daily"?e.cad==="daily":e.cad!=="daily") && !rec.items.some(it=>it.exId===e.id));
+    function addItemForm(f,akey){
+      const cand=S.exercises.filter(e=>e.fronte===f.id && !rec.items.some(it=>it.exId===e.id));
       const st={pick:cand.length?cand[0].id:"__new",name:"",dose:""};
       const w=el("div",{style:"margin-top:8px"});
       const sel=el("select",{style:SELSTYLE,onchange:e=>{st.pick=e.target.value;paint();}});
@@ -1478,7 +1557,7 @@ function openDaySheet(d){
           if(st.pick==="__new"){
             if(!st.name.trim()){toast("Serve un nome");return;}
             it={uid:newUid(),exId:null,fronte:f.id,name:st.name.trim(),dose:st.dose.trim(),
-              cad:kind==="daily"?"daily":"alt",status:null,note:"",load:null,manual:true};
+              status:null,note:"",load:null,manual:true};
           }else{
             const e=S.exercises.find(x=>x.id===st.pick);
             if(!e){toast("Esercizio non trovato");return;}
@@ -1493,37 +1572,19 @@ function openDaySheet(d){
     sheet.append(el("div",{class:"sheetfoot"},
       el("button",{class:"btn ghost small",onclick:()=>confirmSheet("Cancellare questa giornata?","I dati inseriti per questo giorno verranno rimossi.","Elimina",()=>{
         S.days[d]={deleted:true};save();closeSheet();render();},true)},"Elimina"),
-      el("button",{class:"btn primary small",onclick:()=>{
-        for(const sec of SECTIONS)setSecDone(rec,sec,true); // dallo storico si salva la giornata intera
-        save();closeSheet();render();toast("Giornata aggiornata ✓");}},"Salva")));
+      // Non registra più tutto in blocco: quello lo decidono i due pulsanti di sezione
+      // qui sopra. Le modifiche sono già salvate mentre le fai.
+      el("button",{class:"btn primary small",onclick:()=>{closeSheet();render();}},"Chiudi")));
   });
 }
 
 /* ----- SETUP ----- */
-function viewSetup(){
+
+/* ----- ESERCIZI: catalogo e livelli, fuori dalle impostazioni -----
+   Le Impostazioni restano la configurazione dell'app (sincronizzazione, backup, tema,
+   diagnostica); qui sta il materiale della riabilitazione, che si tocca molto più spesso. */
+function viewEsercizi(){
   const frag=document.createDocumentFragment();
-
-  frag.append(syncCard());
-
-  // backup
-  const bk=el("div",{class:"card"});
-  bk.append(el("h2",{},"Backup dati"));
-  const lb=S.lastBackup;
-  const days=lb?Math.floor((parseISO(todayISO())-parseISO(lb))/86400000):null;
-  if(lb==null||days>=7){
-    bk.append(el("div",{class:"banner"}, lb==null?"Non hai mai fatto un backup. Esportalo e salvalo (Drive, mail a te stesso…).":
-      `Ultimo backup ${days} giorni fa. Meglio rifarlo.`));
-  }else{
-    bk.append(el("div",{class:"sub",style:"margin-bottom:8px"},`Ultimo backup: ${cap(fmtShort(lb))}.`));
-  }
-  bk.append(el("button",{class:"btn primary",onclick:exportJSON},"⭳  Esporta backup (JSON)"));
-  bk.append(el("label",{class:"btn ghost",style:"margin-top:10px"},"⭱  Importa backup (JSON)",
-    el("input",{type:"file",accept:"application/json,.json",style:"display:none",onchange:importJSON})));
-  bk.append(el("button",{class:"btn ghost",style:"margin-top:10px",onclick:importFromText},"⤵  Importa da testo (incolla)"));
-  bk.append(el("div",{class:"rowsep"}));
-  bk.append(el("button",{class:"btn ghost",onclick:exportSpecialist},"🩺  Esporta riepilogo per lo specialista"));
-  frag.append(bk);
-
   // levels & gate thresholds
   const gt=el("div",{class:"card"});
   gt.append(el("h2",{},"Livelli e gate"));
@@ -1560,15 +1621,27 @@ function viewSetup(){
       const grp=el("div",{class:"lvgroup","data-fronte":f.id,"data-level":l.id});
       grp.append(el("div",{class:"lvghdr"}, l.name,
         S.levels[f.id]===l.id?el("span",{class:"cur"},"· dove sei ora"):null));
-      const list=S.exercises.filter(e=>e.fronte===f.id&&e.minLevel===l.id);
+      const list=S.exercises.filter(e=>e.fronte===f.id&&e.minLevel===l.id&&!e.sempre);
       if(!list.length)grp.append(el("div",{class:"lvgempty"},"Nessun esercizio entra a questo livello."));
       const box=el("div",{class:"exadmin"});
       for(const e of list)box.append(exerciseAdminRow(e));
       grp.append(box);
       ex.append(grp);
     }
+    // consigli del fronte: fuori dalla scala dei livelli, perché non sono una progressione
+    const cs=consigliDi(f.id);
+    const cgrp=el("div",{class:"consgroup"});
+    cgrp.append(el("div",{class:"lvghdr"},"💡 Consigli",
+      el("button",{class:"iconbtn",style:"margin-left:auto;text-transform:none;letter-spacing:0",
+        title:"Aggiungi un consiglio a "+f.name,
+        onclick:()=>openConsiglioSheet(null,f.id)},"+ Consiglio")));
+    if(!cs.length)cgrp.append(el("div",{class:"lvgempty"},"Nessun consiglio presente."));
+    const cbox=el("div",{class:"exadmin"});
+    for(const e of cs)cbox.append(consiglioAdminRow(e));
+    cgrp.append(cbox);
+    ex.append(cgrp);
     // esercizi il cui minLevel non corrisponde più a nessun livello della scala
-    const orfani=S.exercises.filter(e=>e.fronte===f.id&&!f.levels.some(l=>l.id===e.minLevel));
+    const orfani=S.exercises.filter(e=>e.fronte===f.id&&!e.sempre&&!f.levels.some(l=>l.id===e.minLevel));
     if(orfani.length){
       const grp=el("div",{class:"lvgroup","data-fronte":f.id,"data-level":f.levels[0].id});
       grp.append(el("div",{class:"lvghdr"},"Livello non più esistente"));
@@ -1579,6 +1652,33 @@ function viewSetup(){
     }
   }
   frag.append(ex);
+  return frag;
+}
+
+function viewSetup(){
+  const frag=document.createDocumentFragment();
+
+  frag.append(syncCard());
+
+  // backup
+  const bk=el("div",{class:"card"});
+  bk.append(el("h2",{},"Backup dati"));
+  const lb=S.lastBackup;
+  const days=lb?Math.floor((parseISO(todayISO())-parseISO(lb))/86400000):null;
+  if(lb==null||days>=7){
+    bk.append(el("div",{class:"banner"}, lb==null?"Non hai mai fatto un backup. Esportalo e salvalo (Drive, mail a te stesso…).":
+      `Ultimo backup ${days} giorni fa. Meglio rifarlo.`));
+  }else{
+    bk.append(el("div",{class:"sub",style:"margin-bottom:8px"},`Ultimo backup: ${cap(fmtShort(lb))}.`));
+  }
+  bk.append(el("button",{class:"btn primary",onclick:exportJSON},"⭳  Esporta backup (JSON)"));
+  bk.append(el("label",{class:"btn ghost",style:"margin-top:10px"},"⭱  Importa backup (JSON)",
+    el("input",{type:"file",accept:"application/json,.json",style:"display:none",onchange:importJSON})));
+  bk.append(el("button",{class:"btn ghost",style:"margin-top:10px",onclick:importFromText},"⤵  Importa da testo (incolla)"));
+  bk.append(el("div",{class:"rowsep"}));
+  bk.append(el("button",{class:"btn ghost",onclick:exportSpecialist},"🩺  Esporta riepilogo per lo specialista"));
+  frag.append(bk);
+
 
   // appearance + danger
   const misc=el("div",{class:"card"});
@@ -1602,12 +1702,43 @@ function exerciseAdminRow(e){
   grip.addEventListener("pointerdown",ev=>startExDrag(ev,e,row));
   row.append(grip,
     el("div",{style:"flex:1;min-width:0"}, el("div",{class:"en"},e.name),
-      el("div",{class:"ed"},`${e.dose} · ${e.cad==="daily"?"ogni giorno":"alterni"}`)),
+      el("div",{class:"ed"},e.sempre?"💡 consiglio · "+e.dose:e.dose)),
     el("button",{class:"iconbtn",onclick:()=>openExerciseSheet(e.id)},"✎"),
     el("button",{class:"iconbtn",onclick:()=>confirmSheet("Eliminare l'esercizio?",
       "“"+e.name+"” verrà tolto dal catalogo. Le giornate già registrate lo conservano.","Elimina",
       ()=>{S.exercises=S.exercises.filter(x=>x.id!==e.id);save();render();},true)},"🗑"));
   return row;
+}
+
+// Un consiglio è solo testo: niente livello da trascinare, niente dose.
+function consiglioAdminRow(e){
+  return el("div",{class:"er"},
+    el("div",{class:"en",style:"flex:1;min-width:0;font-weight:500"},e.name+(e.dose?" · "+e.dose:"")),
+    el("button",{class:"iconbtn",onclick:()=>openConsiglioSheet(e.id,e.fronte)},"✎"),
+    el("button",{class:"iconbtn",onclick:()=>confirmSheet("Eliminare il consiglio?",
+      "Verrà tolto da questo fronte. Le giornate registrate non ne risentono: i consigli non si registrano.","Elimina",
+      ()=>{S.exercises=S.exercises.filter(x=>x.id!==e.id);save();render();},true)},"🗑"));
+}
+// Form minimo: un consiglio si scrive e basta.
+function openConsiglioSheet(id,fid){
+  const editing=id?S.exercises.find(e=>e.id===id):null;
+  let testo=editing?(editing.name+(editing.dose?" · "+editing.dose:"")):"";
+  openSheet(editing?"Modifica consiglio":"Nuovo consiglio", s=>{
+    s.append(el("p",{class:"sub",style:"margin:0 0 4px"},
+      "Vale a ogni livello e non si registra: compare in Oggi accanto a "+fronte(fid).name+"."));
+    s.append(el("div",{class:"field"},
+      el("textarea",{placeholder:"es. Grip isometrico 4×30–45s al 50–60%, la mattina prima del PC",
+        style:"min-height:110px",oninput:e=>testo=e.target.value},testo)));
+    s.append(el("div",{class:"actions"},
+      el("button",{class:"btn primary",onclick:()=>{
+        const t=testo.trim();
+        if(!t){toast("Scrivi il consiglio");return;}
+        if(editing){editing.name=t;editing.dose="";}
+        else S.exercises.push({id:"e_"+Math.random().toString(36).slice(2,8),fronte:fid,
+          name:t,dose:"",minLevel:fronte(fid).levels[0].id,load:null,sempre:true});
+        save();closeSheet();render();toast(editing?"Consiglio aggiornato":"Consiglio aggiunto");}},"Salva"),
+      el("button",{class:"btn ghost",onclick:closeSheet},"Annulla")));
+  });
 }
 
 /* ---- trascinamento di un esercizio fra i livelli ----
@@ -1886,25 +2017,30 @@ function openExerciseSheet(id,pre){
   const editing=id?S.exercises.find(e=>e.id===id):null;
   const fid=(pre&&pre.fronte)||S.fronti[0].id;
   const draft=editing?Object.assign({},editing):{id:"e_"+Math.random().toString(36).slice(2,8),
-    fronte:fid,name:"",cad:"daily",dose:"",
+    fronte:fid,name:"",dose:"",sempre:!!(pre&&pre.sempre),
     minLevel:(pre&&pre.minLevel)||S.levels[fid]||fronte(fid).levels[0].id,load:null};
-  openSheet(editing?"Modifica esercizio":"Nuovo esercizio", s=>{
+  const tipo=draft.sempre?"consiglio":"esercizio";
+  openSheet((editing?"Modifica ":"Nuovo ")+tipo, s=>{
     const f_name=el("input",{value:draft.name,placeholder:"Nome esercizio",oninput:e=>draft.name=e.target.value});
     const f_dose=el("input",{value:draft.dose,placeholder:"es. 3×12",oninput:e=>draft.dose=e.target.value});
     const f_fronte=el("select",{onchange:e=>{draft.fronte=e.target.value;rebuildLevels();}});
     S.fronti.forEach(f=>f_fronte.append(el("option",{value:f.id,selected:f.id===draft.fronte?"selected":null},f.name)));
-    const f_cad=el("select",{onchange:e=>draft.cad=e.target.value});
-    [["daily","Ogni giorno"],["alt","Giorni alterni"]].forEach(([v,l])=>f_cad.append(el("option",{value:v,selected:v===draft.cad?"selected":null},l)));
     const f_level=el("select",{onchange:e=>draft.minLevel=e.target.value});
     function rebuildLevels(){f_level.innerHTML="";fronte(draft.fronte).levels.forEach(l=>
       f_level.append(el("option",{value:l.id,selected:l.id===draft.minLevel?"selected":null},l.name)));}
     rebuildLevels();
+    const f_sempre=el("button",{class:"btn small ghost",style:"width:auto",
+      onclick:()=>{draft.sempre=!draft.sempre;f_sempre.textContent=draft.sempre?"Sì":"No";}},
+      draft.sempre?"Sì":"No");
     s.append(
       el("div",{class:"field"}, el("label",{},"Nome"),f_name),
       el("div",{class:"field"}, el("label",{},"Dose (col carico previsto dal livello, es. “3×12 · 2–4 kg”)"),f_dose),
       el("div",{class:"field"}, el("label",{},"Fronte"),f_fronte),
-      el("div",{class:"field"}, el("label",{},"Cadenza"),f_cad),
       el("div",{class:"field"}, el("label",{},"Attivo dal livello"),f_level),
+      el("div",{class:"setrow"},
+        el("div",{}, el("div",{class:"lbl"},"Consiglio sempre valido"),
+          el("div",{class:"desc"},"Lo sposta fra i consigli del fronte: fuori dal piano, non si registra, il livello non conta.")),
+        f_sempre),
       el("div",{class:"actions"},
         el("button",{class:"btn primary",onclick:()=>{
           if(!draft.name.trim()){toast("Serve un nome");return;}

@@ -30,16 +30,19 @@ degli esercizi *com'erano quel giorno*, feedback compreso.
   "morning": { "avambraccio": "ok" },
   "items": [
     { "uid": "i_ab12cd34", "exId": "e_wrist", "fronte": "avambraccio",
-      "name": "Wrist curl eccentrico", "dose": "3×12", "cad": "alt",
+      "name": "Wrist curl eccentrico", "dose": "3×12",
       "status": "ok", "note": "", "manual": false }
   ]
 }
 ```
 
-Nella tab **Oggi** le due sezioni (mattina e allenamento) si registrano separatamente: `done`
-dice quali hai già chiuso — una sezione chiusa si mostra come recap in sola lettura, con un
-"✎ Modifica" per riaprirla. La giornata è `committed` (definitiva: conta per striscia, gate e
-grafici) solo quando entrambe sono registrate.
+Le due sezioni (mattina e allenamento) si registrano separatamente: `done` dice quali hai
+già chiuso. La giornata è `committed` (definitiva: conta per striscia, gate e grafici) solo
+quando entrambe sono registrate.
+
+Nella tab **Oggi** una sezione registrata si mostra come recap in sola lettura, con "✎ Modifica"
+per riaprirla. Nello **Storico** le stesse due registrazioni ci sono ma la sezione resta sempre
+modificabile: è il posto in cui si va apposta a correggere.
 
 Da cui la regola che governa tutto:
 
@@ -47,8 +50,10 @@ Da cui la regola che governa tutto:
   (la lista esercizi finché la sezione allenamento è aperta);
 - **giornate registrate** → mai toccate in automatico, tranne quando cambi a mano il tipo
   della giornata; per il resto solo col pulsante "⟳ Riallinea";
-- **giornate di riposo** → nessun esercizio, nemmeno quelli a cadenza `daily`: si allena a
-  giorni alterni e basta. La cadenza serve solo a raggruppare dentro una giornata di allenamento;
+- **giornate di riposo** → nessun esercizio. Ci si allena a giorni alterni e basta, quindi
+  la vecchia distinzione fra cadenza `alt` e `daily` non esiste più: gli esercizi si fanno
+  tutti negli stessi giorni e la lista è una sola, raggruppata per fronte. Il campo `cad`
+  sopravvive solo dentro le giornate vecchie e nella migrazione da v1;
 - la sync col catalogo non rimuove mai un item con feedback o con `manual: true`;
 - tutto resta correggibile a posteriori dallo Storico, livello del giorno incluso.
 
