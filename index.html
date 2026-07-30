@@ -938,9 +938,9 @@ function viewOggi(){
           el("span",{class:"bar",style:`background:${f.color}`}), el("h3",{class:"frname"},f.name),
           el("span",{class:"sub",style:"margin-left:auto"},rec.levels[f.id]),
           el("button",{class:"okmini",onclick:(function(uids){return ()=>markExercisesOk(uids);})(grpUids)},"✓ Ok")));
-        for(const it of its) tcard.append(exerciseRow(rec,it));
-        const c=consigliBlock(f);
+        const c=consigliBlock(f); // subito sotto il titolo del fronte, prima degli esercizi
         if(c)tcard.append(c);
+        for(const it of its) tcard.append(exerciseRow(rec,it));
       }
       return n;
     };
