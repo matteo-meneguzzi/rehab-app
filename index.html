@@ -632,8 +632,9 @@ function sortItems(rec){
 // Automatica solo sulle bozze; su una giornata registrata va chiesta esplicitamente.
 function syncDayItems(rec,d){
   if(!Array.isArray(rec.items))rec.items=[];
+  // Nei giorni di riposo non si fa nulla: nemmeno gli esercizi "ogni giorno".
   const isTrain=dayType(rec,d)==="train";
-  const pertinente=e=>(isTrain||e.cad==="daily") &&
+  const pertinente=e=>isTrain &&
     lvIndex(e.fronte,e.minLevel)<=lvIndex(e.fronte,rec.levels[e.fronte]);
   rec.items=rec.items.filter(it=>{
     if(it.manual||it.status||it.note)return true;
@@ -887,7 +888,7 @@ function viewOggi(){
     tcard.append(el("div",{class:"sub"},"Registrato. Tocca Modifica se devi correggere qualcosa."));
     tcard.append(trainRecap(rec,d));
   }else{
-    tcard.append(el("div",{class:"sub"},"Compila dopo la seduta. Nei giorni di scarico bastano gli esercizi quotidiani."));
+    tcard.append(el("div",{class:"sub"},"Compila dopo la seduta. Nei giorni di riposo non c'è niente da compilare."));
     const seg=el("div",{class:"seg",style:"margin-top:12px"});
     const mk=(k,l)=>el("button",{"aria-pressed":String(dayType(rec,d)===k),
       onclick:()=>{const t=setDayType(rec,d,k);render();if(t)toast("Esercizi riallineati al nuovo tipo di giornata");}},l);
@@ -913,13 +914,18 @@ function viewOggi(){
       return n;
     };
 
-    // Giorni alterni (sopra) — vuota nei giorni di riposo
-    tcard.append(el("div",{class:"cadsec"},"Giorni alterni"));
-    if(!renderCadence("alt")) tcard.append(el("div",{class:"cadempty"},
-      isTrain?"Nessun esercizio a giorni alterni a questo livello.":"Saltiamo questa parte oggi."));
-    // Ogni giorno (sotto)
-    tcard.append(el("div",{class:"cadsec"},"Ogni giorno"));
-    if(!renderCadence("daily")) tcard.append(el("div",{class:"cadempty"},"Nessun esercizio quotidiano a questo livello."));
+    // Un giorno di riposo è vuoto per definizione: niente sezioni, una riga sola.
+    // Restano visibili solo gli esercizi che portano dati o aggiunti a mano.
+    if(!isTrain && !(rec.items||[]).length){
+      tcard.append(el("div",{class:"cadempty"},"Giornata di riposo: nessun esercizio."));
+    }else{
+      tcard.append(el("div",{class:"cadsec"},"Giorni alterni"));
+      if(!renderCadence("alt")) tcard.append(el("div",{class:"cadempty"},
+        isTrain?"Nessun esercizio a giorni alterni a questo livello.":"Saltiamo questa parte oggi."));
+      tcard.append(el("div",{class:"cadsec"},"Ogni giorno"));
+      if(!renderCadence("daily")) tcard.append(el("div",{class:"cadempty"},
+        isTrain?"Nessun esercizio quotidiano a questo livello.":"Saltiamo questa parte oggi."));
+    }
 
     tcard.append(secRegisterRow(d,"train"));
     tcard.append(el("div",{class:"sub",style:"margin-top:16px"},
@@ -1374,7 +1380,8 @@ function openDaySheet(d){
       // Esercizi della giornata: si modificano qui, il catalogo non c'entra più
       const renderCad=(kind,label)=>{
         body.append(el("div",{class:"cadsec"},label));
-        if(kind!=="daily" && !isTrain && !itemsOf(rec,null,kind).length)
+        // di riposo vale per entrambe le cadenze: quel giorno non era previsto nulla
+        if(!isTrain && !itemsOf(rec,null,kind).length)
           body.append(el("div",{class:"cadempty"},"Giornata di riposo."));
         for(const f of S.fronti){
           const its=itemsOf(rec,f.id,kind);

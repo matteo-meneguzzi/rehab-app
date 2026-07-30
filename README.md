@@ -34,6 +34,8 @@ Da cui la regola che governa tutto:
   (la lista esercizi finché la sezione allenamento è aperta);
 - **giornate registrate** → mai toccate in automatico, tranne quando cambi a mano il tipo
   della giornata; per il resto solo col pulsante "⟳ Riallinea";
+- **giornate di riposo** → nessun esercizio, nemmeno quelli a cadenza `daily`: si allena a
+  giorni alterni e basta. La cadenza serve solo a raggruppare dentro una giornata di allenamento;
 - la sync col catalogo non rimuove mai un item con feedback o con `manual: true`;
 - tutto resta correggibile a posteriori dallo Storico, livello del giorno incluso.
 
