@@ -4,6 +4,19 @@ App a file singolo (`index.html`): nessuna build, nessuna dipendenza. Si apre in
 e funziona offline; i dati vivono in `localStorage` e, se colleghi la sincronizzazione,
 anche in un Gist GitHub privato e cifrato.
 
+## Rilascio
+
+Basta pushare su `main`: il workflow `.github/workflows/pages.yml` pubblica su GitHub Pages
+e **timbra la versione da solo** nella copia servita, come `r<numero di commit> · <commit> ·
+<data>`. Nel repo il marcatore resta `dev`, così una copia aperta in locale si riconosce.
+
+Niente da aggiornare a mano. In Impostazioni → Diagnostica trovi la versione in uso e il
+pulsante "Controlla aggiornamenti", che scarica la pagina dal server saltando la cache e
+confronta i due marcatori: è la risposta a "il telefono sta vedendo l'ultima versione?".
+
+Perché serve un workflow e non basta il deploy da branch: la versione dev'essere quella del
+commit *pubblicato*, e quel numero si conosce solo al momento del deploy.
+
 ## Modello dati (v2)
 
 Ogni giornata è **autosufficiente**: si porta dentro il livello di ogni fronte e la lista

@@ -6,6 +6,9 @@
 <title>Recupero — Diario allenamento</title>
 <meta name="description" content="Diario personale di riabilitazione e allenamento.">
 <meta name="robots" content="noindex, nofollow">
+<!-- Timbrato dal workflow Pages a ogni deploy (r<numero> · <commit> · <data>).
+     Qui resta "dev": è la copia non pubblicata. -->
+<meta name="app-version" content="dev">
 <!-- aggiunta alla schermata Home su iOS: si apre a tutto schermo, senza barre del browser -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -1786,6 +1789,29 @@ function syncCard(){
    o vuoto. Le due cause tipiche su telefono sono qui sotto: l'app aperta da un contesto
    diverso (su iOS l'icona sulla Home e la scheda del browser hanno storage separati)
    e lo storage non scrivibile (navigazione privata). */
+// Versione in esecuzione, letta dal marcatore nell'head.
+const VERSION=(document.querySelector('meta[name="app-version"]')||{}).content||"sconosciuta";
+// Stato dell'ultimo controllo, fuori dalla vista perché diagBlock si ricostruisce a ogni render
+let UPD={stato:null,remota:"",msg:""};
+function baseUrl(){return location.href.split("#")[0].split("?")[0];}
+// Scarica la pagina dal server saltando la cache e confronta il marcatore di versione:
+// dice se quello che stai vedendo è davvero l'ultima copia pubblicata.
+async function checkUpdate(){
+  UPD={stato:"busy",remota:"",msg:""};render();
+  try{
+    const r=await fetch(baseUrl()+"?_="+Date.now(),{cache:"no-store"});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const m=(await r.text()).match(/name="app-version"\s+content="([^"]+)"/);
+    if(!m)UPD={stato:"ignoto",remota:"",msg:"Il server non espone una versione."};
+    else if(m[1]===VERSION)UPD={stato:"ok",remota:m[1],msg:""};
+    else UPD={stato:"vecchia",remota:m[1],msg:""};
+  }catch(e){UPD={stato:"errore",remota:"",msg:e.message||"controllo non riuscito"};}
+  render();
+}
+// Ricarica aggirando la cache: il parametro rende l'indirizzo nuovo per il browser.
+// Stesso dominio e stesso percorso, quindi dati e credenziali restano dove sono.
+function reloadFresh(){location.replace(baseUrl()+"?v="+Date.now());}
+
 function appContext(){
   if(navigator.standalone===true)return "App dalla Home";
   if(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)return "App installata";
@@ -1805,6 +1831,7 @@ function diagBlock(){
   const riga=(k,v,avviso)=>w.append(el("div",{class:"setrow"},
     el("div",{class:"lbl",style:"font-size:13px"},k),
     el("div",{class:"desc",style:avviso?"color:var(--red);text-align:right":"text-align:right"},v)));
+  riga("Versione in uso", VERSION==="dev"?"dev (copia non pubblicata)":VERSION);
   const org=location.origin;
   riga("Origine", org&&org!=="null"?org:"file locale (lo storage non dura)", !org||org==="null");
   riga("Contesto", appContext());
@@ -1812,6 +1839,24 @@ function diagBlock(){
   riga("Memoria del browser", scriv?"scrivibile":"NON scrivibile (navigazione privata?)", !scriv);
   riga("Credenziali su questo dispositivo", localStorage.getItem(CFG_KEY)?"presenti":"assenti");
   riga("Giornate salvate qui", String(Object.keys(S.days||{}).filter(d=>!S.days[d].deleted).length));
+
+  // controllo aggiornamenti: l'app dalla Home non ha un pulsante Ricarica
+  const btn=el("button",{class:"btn ghost small",style:"margin-top:12px",
+    onclick:UPD.stato==="busy"?null:checkUpdate},
+    UPD.stato==="busy"?"Controllo…":"Controlla aggiornamenti");
+  if(UPD.stato==="busy")btn.disabled=true;
+  w.append(btn);
+  if(UPD.stato==="ok")
+    w.append(el("div",{class:"sub",style:"margin-top:8px;color:var(--ok)"},
+      "✓ Stai già usando l'ultima versione pubblicata."));
+  if(UPD.stato==="vecchia"){
+    w.append(el("div",{class:"banner",style:"margin-top:10px"},
+      el("b",{},"C'è una versione più recente: "+UPD.remota+". "),
+      "Stai vedendo una copia in cache."));
+    w.append(el("button",{class:"btn primary small",onclick:reloadFresh},"Ricarica l'ultima versione"));
+  }
+  if(UPD.stato==="ignoto"||UPD.stato==="errore")
+    w.append(el("div",{class:"sub",style:"margin-top:8px;color:var(--red)"},UPD.msg));
   return w;
 }
 

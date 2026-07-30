@@ -1,0 +1,61 @@
+# Pubblica l'app su GitHub Pages timbrando la versione nella copia servita.
+# Nel repo il marcatore resta "dev": il numero vero lo mette qui il deploy, così
+# non c'è niente da ricordarsi a mano e la versione corrisponde sempre al commit
+# davvero pubblicato.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# un deploy alla volta, senza annullare quello in corso
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # serve a contare i commit
+
+      - name: Prepara la copia da pubblicare
+        run: |
+          mkdir _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' ./ _site/
+
+      - name: Timbra la versione
+        run: |
+          python3 - <<'PY'
+          import os, re, subprocess
+          def git(*a): return subprocess.run(["git",*a],capture_output=True,text=True).stdout.strip()
+          versione = "r%s · %s · %s" % (git("rev-list","--count","HEAD"),
+                                        os.environ["GITHUB_SHA"][:7],
+                                        git("log","-1","--format=%cs"))
+          percorso = "_site/index.html"
+          testo = open(percorso, encoding="utf-8").read()
+          testo, n = re.subn(r'(name="app-version"\s+content=")[^"]*(")',
+                             lambda m: m.group(1) + versione + m.group(2), testo, count=1)
+          if n != 1:
+              raise SystemExit("marcatore app-version non trovato in index.html")
+          open(percorso, "w", encoding="utf-8").write(testo)
+          print("versione pubblicata:", versione)
+          PY
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
